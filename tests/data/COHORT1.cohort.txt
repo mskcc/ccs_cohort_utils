@@ -4,4 +4,4 @@
 #projectSubtitle: Project_12345
 #TUMOR_ID	NORMAL_ID
 s_C_AAAAAA_P001_d	s_C_AAAAAA_N001_d
-s_C_BBBBBB_P001_d       s_C_BBBBBB_N001_d
+s_C_BBBBBB_P001_d	s_C_BBBBBB_N001_d
