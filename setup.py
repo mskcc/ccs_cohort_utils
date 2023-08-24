@@ -1,0 +1,18 @@
+from setuptools import find_packages, setup
+
+version = "0.0.1"
+
+
+with open("requirements.txt") as f:
+    required = f.read().splitlines()
+
+setup(
+    name="cohort_utils",
+    version=version,
+    description="Helper tools for cohorts",
+    author="Anne Marie Noronha",
+    install_requires=required
+)
+
+
+
