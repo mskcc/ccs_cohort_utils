@@ -1,5 +1,5 @@
 import csv
-#import pandas as pd
+import pandas as pd
 
 csv.register_dialect('readCRFSamples', delimiter="\t", quoting=csv.QUOTE_NONE)
 
@@ -40,20 +40,20 @@ def clean_comment(csvfile,comment="#",removeComment=True):
                 yield "#".join(s)
 
 def read_crf(crf):
-    rows = []
     with open(crf, 'r') as f:
         in_meta=True
         line_cursor=0
         while in_meta:
-            l =  f.readline()
+            l = f.readline()
             l = l.strip().lstrip("\"")
             if l.startswith("#NORMAL_ID") or l.startswith("#TUMOR_ID"):
+                header_list = [m.strip() for m in l.replace("#","").split("\t")]
+                header_list = header_list[:max(2,len(header_list))]
                 in_meta=False
                 f.seek(line_cursor)
-                reader = csv.reader(clean_comment(f,removeComment=False), dialect='readCRFSamples')
-                for row in reader:
-                    rows.append(row)
+                crf_table = pd.read_csv(f, header=0, sep="\t")
             line_cursor = f.tell()
-    return rows 
+    crf_table.rename(columns={i:i.replace("#","") for i in list(crf_table)}, inplace=True)
+    return crf_table
 
 

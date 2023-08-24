@@ -8,12 +8,6 @@ class Pair:
 
         self._validate_data_types()
 
-        try:
-            self._validate_patientid_match()
-        except ValueError as e:
-            print(e)
-
-
     def _validate_data_types(self):
         if not isinstance(self.tumor_sample,Sample):
             raise ValueError("tumor_sample must be of class Sample!")
