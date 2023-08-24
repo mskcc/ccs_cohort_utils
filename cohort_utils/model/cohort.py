@@ -1,4 +1,4 @@
-import os,copy
+import os,copy,sys
 #from cohort_utils.model import Sample, Pair
 from .pair import Pair
 from .sample import Sample
@@ -52,20 +52,17 @@ class Cohort:
     def add_pair(self, pair):
         self.pairs = self.pairs.append(pair)
 
-    def write_crf(self,path):
-        with open(path, 'w') as f:
-            f.write("#endUsers:" + ",".join(self.endUsers) + "\n")
-            f.write("#pmUsers:" + ",".join(self.pmUsers) + "\n")
-            f.write("#projectTitle:" + self.title + "\n")
-            f.write("#projectSubtitle:" + self.subtitle + "\n")
-            if self.deliver_fq and self.deliver_bam:
-                f.write("#holdBamsAndFastqs:false\n")
-            else: f.write("#holdBamsAndFastqs:true\n")
-            #for k,v in self.meta:
-            #    f.write("#{}:{}".format(k,v))
-            f.write("#TUMOR_ID\tNORMAL_ID\n")
-            for i in pairs:
-                f.write("\t".join(i.get_tuple_str(i)) + "\n")
+    def to_crf(self,location=sys.stdout):
+        print(f"#endUsers:{",".join(self.endUsers)}\n",file=location)
+        print(f"#pmUsers:{",".join(self.pmUsers)}\n",file=location)
+        print(f"#projectTitle:{self.title}\n",file=location)
+        print(f"#projectSubtitle:{self.subtitle}\n",file=location)
+        if self.deliver_fq and self.deliver_bam:
+            print("#holdBamsAndFastqs:false\n",file=location)
+        else: print("#holdBamsAndFastqs:true\n",file=location)
+        print("#TUMOR_ID\tNORMAL_ID\n",file=location)
+        for i in pairs:
+            print(f"{"\t".join(i.get_tuple_str())}\n")
     
     def to_json(self):
         jsonObj = dict()
@@ -74,5 +71,3 @@ class Cohort:
             jsonObj[i] = self.getattr(i)
         jsonObj["holdBamsAndFastqs"] = not ( self.deliver_fq | self.deliver_bam )
         return jsonObj
-
-

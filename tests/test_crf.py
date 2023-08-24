@@ -25,6 +25,10 @@ class TestCRF(unittest.TestCase):
         assert my_cohort.cohort_id == "COHORT1"
         assert my_cohort.subtitle == "Project_12345"
 
+    def test_tocrf(self):
+        crf_handle = parsers.crf.CRF_Handler(crf=COHORTFILE)
+        my_cohort = crf_handle.to_cohort()
+        cohort.to_crf()
 
 
 if __name__ == "__main__":
