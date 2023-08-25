@@ -1,4 +1,5 @@
 import re
+import numpy as np
 
 def categorize_id(id):
     id = normalize_id(id)

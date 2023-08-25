@@ -1,5 +1,6 @@
 import csv
 import pandas as pd
+import numpy as np
 
 csv.register_dialect('readCRFSamples', delimiter="\t", quoting=csv.QUOTE_NONE)
 
@@ -51,7 +52,7 @@ def read_crf(crf):
                 header_list = header_list[:max(2,len(header_list))]
                 in_meta=False
                 f.seek(line_cursor)
-                crf_table = pd.read_csv(f, header=0, sep="\t")
+                crf_table = pd.read_csv(f, header=0, sep="\t").fillna(np.nan)
             line_cursor = f.tell()
     crf_table.rename(columns={i:i.replace("#","") for i in list(crf_table)}, inplace=True)
     return crf_table

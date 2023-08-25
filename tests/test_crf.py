@@ -1,7 +1,10 @@
 from cohort_utils import parsers
+from cohort_utils.model import Pairing
 import unittest
 
-COHORTFILE = "./data/COHORT1.cohort.txt"
+COHORTFILE  = "./data/COHORT1.cohort.txt"
+COHORTFILE2 = "./data/COHORT2.cohort.txt"
+PAIRINGFILE = "./data/pairing.tsv"
 
 class TestCRF(unittest.TestCase):
     def test_parse(self):
@@ -22,8 +25,18 @@ class TestCRF(unittest.TestCase):
     def test_tocrf(self):
         crf_handle = parsers.crf.CRF_Handler(crf=COHORTFILE)
         my_cohort = crf_handle.to_cohort()
-        cohort.to_crf()
+        my_cohort.to_crf()
 
+    def test_add_normals(self):
+        pairing = Pairing(file=PAIRINGFILE)
+        crf_handle = parsers.crf.CRF_Handler(crf=COHORTFILE2)
+        my_cohort = crf_handle.to_cohort()
+        assert len(my_cohort) == 3
+        new_cohort = my_cohort.reconcile_cohort_pairing(pairing)
+        assert len(new_cohort) == 3
+        assert not my_cohort.is_valid()
+        print([i.get_tuple_str() for i in new_cohort.pairs.values()])
+        assert new_cohort.is_valid()
 
 if __name__ == "__main__":
     unittest.main()
