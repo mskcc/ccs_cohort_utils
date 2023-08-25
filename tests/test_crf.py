@@ -1,13 +1,7 @@
-#import cohort_utils
 from cohort_utils import parsers
-#import cohort_utils.parsers
-
 import unittest
 
 COHORTFILE = "./data/COHORT1.cohort.txt"
-print(COHORTFILE)
-
-
 
 class TestCRF(unittest.TestCase):
     def test_parse(self):
