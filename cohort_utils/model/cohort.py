@@ -16,6 +16,7 @@ class Cohort:
         self.deliver_bam = kwargs.pop("deliver_bam", not holdBamsAndFastqs)
         self.deliver_somatic = kwargs.pop("deliver_somatic",True)
         self.deliver_germline = kwargs.pop("deliver_germline",False)
+        self.type = kwargs.pop("type","investigator")
         self._validate_data_types()
 
     def __len__(self):
@@ -49,6 +50,8 @@ class Cohort:
         assert isinstance(self.deliver_bam, bool)
         assert isinstance(self.deliver_somatic, bool)
         assert isinstance(self.deliver_germline, bool)
+        assert isinstance(self.type, str)
+        assert self.type in ["operational","investigator"]
 
     def add_pair(self, pair):
         self.pairs = self.pairs.append(pair)
