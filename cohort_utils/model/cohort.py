@@ -2,6 +2,8 @@ import os,copy,sys
 from .pair import Pair
 from .sample import Sample
 import pandas as pd
+import json, jsonschema
+
 
 class Cohort:
     def __init__(self,**kwargs):
@@ -71,9 +73,15 @@ class Cohort:
     def to_json(self):
         jsonObj = dict()
         jsonObj["cohort_id"] = self.cohort_id
-        for i in ["endUsers","pmUsers","projectTitle","projectSubtitle"]:
-            jsonObj[i] = self.getattr(i)
+        jsonObj["meta"] = dict()
+        jsonObj["manifest"] = dict()
+        for i in ["endUsers","pmUsers","type"]:
+            jsonObj["meta"][i] = getattr(self,i)
+        jsonObj["meta"]["projectTitle"] =  getattr(self,"title")
+        jsonObj["meta"]["projectSubtitle"] = getattr(self,"subtitle")
         jsonObj["holdBamsAndFastqs"] = not ( self.deliver_fq | self.deliver_bam )
+        for i in self.pairs:
+            jsonObj["manifest"][str(self.pairs[i].tumor_sample)] = {"TUMOR_ID":str(self.pairs[i].tumor_sample),"NORMAL_ID":str(self.pairs[i].normal_sample)}
         return jsonObj
 
     def reconcile_cohort_pairing(self,pairing):

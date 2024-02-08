@@ -1,6 +1,9 @@
 from cohort_utils import parsers
 from cohort_utils.model import Pairing
 import unittest
+from cohort_utils.parsers.crj import CRJ_Handler
+import cohort_utils
+#import cohort_utils.schema.CRJ_JSON_SCHEMA as CRJ_JSON_SCHEMA
 
 COHORTFILE  = "./data/COHORT1.cohort.txt"
 COHORTFILE2 = "./data/COHORT2.cohort.txt"
@@ -25,7 +28,11 @@ class TestCRF(unittest.TestCase):
     def test_tocrf(self):
         crf_handle = parsers.crf.CRF_Handler(crf=COHORTFILE)
         my_cohort = crf_handle.to_cohort()
-        my_cohort.to_crf()
+        my_crj = my_cohort.to_json()
+        my_crj_handler = CRJ_Handler(my_crj,cohort_utils.schema.CRJ_JSON_SCHEMA)
+        print(my_crj)
+        assert len(my_crj_handler) == 2
+        assert len(my_crj["manifest"]) == 2
 
     def test_add_normals(self):
         pairing = Pairing(file=PAIRINGFILE)

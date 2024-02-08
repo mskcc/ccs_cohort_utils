@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "cohort request",
+    "description": "validate cohort request",
+    "type": "object",
+    "properties": {
+        "cohort_id": {
+            "type": "string",
+            "description": "Cohort identifier"
+        },
+        "meta": {
+            "type": "object",
+            "properties": {
+                "endUsers": {
+                    "type": "array",
+                    "description": "List of endUsers",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                },
+                "pmUsers": {
+                    "type": "array",
+                    "description": "List of pmUsers",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                },
+                "projectTitle": {
+                    "type": "string",
+                    "description": "title of cohort"
+                },
+                "projectSubtitle": {
+                    "type": "string",
+                    "description": "subtitle of cohort"
+                },
+                "holdBamsAndFastqs": {
+                    "type": "boolean",
+                    "description": "Whether to deliver Fastqs and Bams or not"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Whether to deliver Fastqs and Bams or not",
+                    "enum": ["investigator","operational"]
+                }
+            },
+            "required":["endUsers","pmUsers","type"]
+        },
+        "manifest": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type":"object",
+                    "properties": {
+                        "NORMAL_ID": {
+                            "type":"string",
+                            "description": "Cmo Id of normal sample"
+                        },
+                        "TUMOR_ID": {
+                            "type":"string",
+                            "description": "Cmo Id of normal sample"
+                        }
+                    },
+                    "required": ["NORMAL_ID","TUMOR_ID"]
+                }
+            }
+        }
+    },
+    "required": ["cohort_id","meta","manifest"]
+}
