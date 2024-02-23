@@ -1,3 +1,6 @@
 pandas
 requests
 jsonschema
+nats-py
+asyncio
+configparser

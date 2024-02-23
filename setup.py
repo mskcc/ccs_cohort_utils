@@ -11,7 +11,10 @@ setup(
     version=version,
     description="Helper tools for cohorts",
     author="Anne Marie Noronha",
-    install_requires=required
+    install_requires=required,
+    packages=find_packages(where="."),
+    package_dir={"": "."},
+    package_data={"": ["**/*.json"]}
 )
 
 
