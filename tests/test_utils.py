@@ -11,6 +11,12 @@ class TestUtils(unittest.TestCase):
 
         id = "s_C_XXX000_T001_d03"
         assert utils.categorize_id(id) == "cmoSampleName"
+        
+        id = "s_C_XXX000_T001_d"
+        assert utils.categorize_id(id) == "cmoSampleName"
+
+        id = "C-XXX000-N001-d"
+        assert utils.categorize_id(id) == "cmoSampleName"
 
         id = "07658_AB_1"
         assert utils.categorize_id(id) == "primaryId"
