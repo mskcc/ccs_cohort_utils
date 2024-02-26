@@ -12,7 +12,7 @@ class TestCRJ(unittest.TestCase):
     def test_parse(self):
         with open(COHORTFILE, 'r') as f:
             crj_data = json.load(f)
-        crj_handle = parsers.crj.CRJ_Handler(crj_data,cohort_utils.schema.CRJ_JSON_SCHEMA)
+        crj_handle = parsers.crj.CRJ_Handler(crj_data,cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
         assert len(crj_handle) == 2
         assert crj_handle.crj["meta"]["projectSubtitle"] == "Project_12345"
         assert crj_handle.crj["cohort_id"] == "COHORT1"
@@ -20,7 +20,7 @@ class TestCRJ(unittest.TestCase):
     def test_tocohort(self):
         with open(COHORTFILE, 'r') as f:
             crj_data = json.load(f)
-        crj_handle = parsers.crj.CRJ_Handler(crj_data,cohort_utils.schema.CRJ_JSON_SCHEMA)
+        crj_handle = parsers.crj.CRJ_Handler(crj_data,cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
         my_cohort = crj_handle.to_cohort()
         assert my_cohort.deliver_somatic
         assert not my_cohort.deliver_germline
