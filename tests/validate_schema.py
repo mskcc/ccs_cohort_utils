@@ -5,10 +5,10 @@ import unittest
 import cohort_utils
 import sys
 
-BAM_COMPLETE    = "./data/json_schema/bam-complete.example.json"
-MAF_COMPLETE    = "./data/json_schema/maf-complete.example.json"
-QC_COMPLETE     = "./data/json_schema/qc-complete.example.json"
-COHORT_COMPLETE = "./data/json_schema/cohort-complete.example.json"
+BAM_COMPLETE    = "./data/json/bam-complete.example.json"
+MAF_COMPLETE    = "./data/json/maf-complete.example.json"
+QC_COMPLETE     = "./data/json/qc-complete.example.json"
+COHORT_COMPLETE = "./data/json/cohort-complete.example.json"
 
 class validateschema(unittest.TestCase):
     def test_bam_complete_json(self):

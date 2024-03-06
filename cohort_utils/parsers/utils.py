@@ -16,7 +16,7 @@ def read_meta(CRF):
     with open(CRF, 'r') as myFile:
         reader = csv.reader(clean_comment(myFile,removeComment=False), dialect='readCRFSamples')
         for row in reader: 
-            if row[0] in ["TUMOR_ID","NORMAL_ID"]:
+            if row[0] in ["TUMOR_ID","NORMAL_ID","PRIMARY_ID","NORMAL_PRIMARY_ID"]:
                 continue
             else:
                 try: 
@@ -56,5 +56,3 @@ def read_crf(crf):
             line_cursor = f.tell()
     crf_table.rename(columns={i:i.replace("#","") for i in list(crf_table)}, inplace=True)
     return crf_table
-
-

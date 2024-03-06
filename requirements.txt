@@ -4,3 +4,6 @@ jsonschema
 nats-py
 asyncio
 configparser
+protobuf
+google-cloud-translate
+google
