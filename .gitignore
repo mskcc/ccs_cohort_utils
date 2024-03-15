@@ -2,3 +2,4 @@
 __pycache__
 cohort_utils.egg-info
 /build
+.DS_Store
