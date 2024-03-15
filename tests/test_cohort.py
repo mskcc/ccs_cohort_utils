@@ -6,6 +6,7 @@ import cohort_utils
 import json,jsonschema
 import pandas as pd
 import tempfile
+import os
 #import cohort_utils.schema.CRJ_JSON_SCHEMA as CRJ_JSON_SCHEMA
 
 COHORT_COMPLETE_JSON  = "./data/json/cohort-complete.example.json"
@@ -50,6 +51,7 @@ class TestCRJ(unittest.TestCase):
             pairing_table.to_csv(f,index=False,sep="\t")
             pairing_file = f.name
         pairing_obj = Pairing(file = pairing_file)
+        os.remove(pairing_file)
         newcohort = mycohort.fillin_normals(pairing_obj)
         jsonschema.validators.validate(instance=newcohort.cohort, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
         metadata_table = pd.DataFrame(
