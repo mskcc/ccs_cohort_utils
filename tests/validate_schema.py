@@ -1,7 +1,6 @@
 import json
 import jsonschema
 import unittest
-#from cohort_utils.schema import *
 import cohort_utils
 import sys
 
@@ -9,6 +8,7 @@ BAM_COMPLETE    = "./data/json/bam-complete.example.json"
 MAF_COMPLETE    = "./data/json/maf-complete.example.json"
 QC_COMPLETE     = "./data/json/qc-complete.example.json"
 COHORT_COMPLETE = "./data/json/cohort-complete.example.json"
+COHORT_REQUEST  = "./data/json/COHORT1.cohort.json"
 
 class validateschema(unittest.TestCase):
     def test_bam_complete_json(self):
@@ -27,6 +27,10 @@ class validateschema(unittest.TestCase):
         with open(COHORT_COMPLETE,'r') as fh:
             instance = json.load(fh)
         jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.COHORT_COMPLETE_JSON_SCHEMA)
+    def test_cohort_request_json(self):
+        with open(COHORT_REQUEST,'r') as fh:
+            instance = json.load(fh)
+        jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
 
 if __name__ == "__main__":
     unittest.main()
