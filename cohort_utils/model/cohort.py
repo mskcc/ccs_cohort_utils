@@ -5,7 +5,7 @@ import pandas as pd
 import json, jsonschema
 from cohort_utils import utils
 import cohort_utils
-
+import copy
 
 
 class Cohort:
@@ -22,7 +22,6 @@ class Cohort:
             self.cohort["type"] = "investigator"
         if not "holdBamsAndFastqs" in self.cohort:
             self.cohort["holdBamsAndFastqs"] = False
-        print(self.cohort["samples"])
         self.schema = cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA
         self._validate_schema()
 
@@ -55,18 +54,35 @@ class Cohort:
                 i["normalCmoId"] = n_id
         return newcohort
 
-    def update_ids(self):
+    def update_ids(self,metadata_table=None):
         newcohort = copy.deepcopy(self)
         for i in newcohort.cohort["samples"]:
-            if i["primaryId"]:
-                i["cmoId"] = utils.search_smile_inputid(i["primaryId"]).get("cmoSampleName",None)
-            elif i["cmoId"] and not i["primaryId"]:
-                i["primaryId"] = utils.search_smile_inputid(i["cmoId"]).get("primaryId",None)
-            if i["normalPrimaryId"]:
-                i["normalCmoId"] = utils.search_smile_inputid(i["normalPrimaryId"]).get("cmoSampleName",None)
-            elif i["normalCmoId"] and not i["normalPrimaryId"]:
-                i["normalPrimaryId"] = search_smile_inputid(i["normalCmoId"]).get("primaryId",None)
+            if i.get("primaryId",None):
+                i["cmoId"] = utils.nice_cmo_id(utils.convert_primaryId_to_cmoId(i["primaryId"],metadata_table))
+            elif i["cmoId"] and not i.get("primaryId",None):
+                i["primaryId"] = utils.convert_cmoId_to_primaryId(i["cmoId"],metadata_table)
+            if i.get("normalPrimaryId",None):
+                i["normalCmoId"] = utils.nice_cmo_id(utils.convert_primaryId_to_cmoId(i["normalPrimaryId"],metadata_table))
+            elif i["normalCmoId"] and not i.get("normalPrimaryId",None):
+                i["normalPrimaryId"] = utils.convert_cmoId_to_primaryId(i["normalCmoId"],metadata_table)
         return newcohort
 
     def _validate_schema(self):
         jsonschema.validators.validate(instance=self.cohort, schema=self.schema)
+
+    def cohort_complete_generate(self,status=None,date=None):
+        mod_cohort = copy.deepcopy(self.cohort)
+        if "holdBamsAndFastqs" in mod_cohort:
+            del mod_cohort["holdBamsAndFastqs"]
+        for i in mod_cohort["samples"]:
+            if "cmoId" in i:
+                del i["cmoId"]
+            if "normalCmoId" in i:
+                del i["normalCmoId"]
+        if status:
+            mod_cohort["status"] = status
+        if date:
+            mod_cohort["date"] = date
+        return mod_cohort
+
+
