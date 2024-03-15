@@ -1,0 +1,1 @@
+from cohort_utils.nats.handler import EventHandler
