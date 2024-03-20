@@ -1,7 +1,4 @@
-#from cohort_utils import parsers
-#from cohort_utils.model import Pairing
 import unittest
-#from cohort_utils.parsers.crj import CRJ_Handler
 import cohort_utils
 
 COHORTFILE  = "./data/COHORT1.cohort.txt"
@@ -18,8 +15,6 @@ class TestCRF(unittest.TestCase):
     def test_tocohort(self):
         crf_handle = cohort_utils.parsers.CRF_Handler(crf=COHORTFILE)
         my_cohort = crf_handle.to_cohort()
-        #assert my_cohort.deliver_somatic
-        #assert not my_cohort.deliver_germline
         assert len(my_cohort) == 2
         assert my_cohort.cohort["cohortId"] == "COHORT1"
         assert my_cohort.cohort["projectSubtitle"] == "Project_12345"

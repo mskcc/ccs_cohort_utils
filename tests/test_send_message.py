@@ -1,4 +1,3 @@
-#from cohort_utils import generate_updates
 import unittest
 import pandas as pd
 import json
