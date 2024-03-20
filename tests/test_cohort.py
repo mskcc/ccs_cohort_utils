@@ -1,13 +1,9 @@
-from cohort_utils import parsers
-from cohort_utils.model import Pairing
 import unittest
-from cohort_utils.parsers.crj import CRJ_Handler
 import cohort_utils
 import json,jsonschema
 import pandas as pd
 import tempfile
 import os
-#import cohort_utils.schema.CRJ_JSON_SCHEMA as CRJ_JSON_SCHEMA
 
 COHORT_COMPLETE_JSON  = "./data/json/cohort-complete.example.json"
 COHORT_REQUEST_JSON   = "./data/json/COHORT1.cohort.json"
@@ -50,7 +46,7 @@ class TestCRJ(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode='w+t', suffix='.csv',delete=False) as f:
             pairing_table.to_csv(f,index=False,sep="\t")
             pairing_file = f.name
-        pairing_obj = Pairing(file = pairing_file)
+        pairing_obj = cohort_utils.model.Pairing(file = pairing_file)
         os.remove(pairing_file)
         newcohort = mycohort.fillin_normals(pairing_obj)
         jsonschema.validators.validate(instance=newcohort.cohort, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)

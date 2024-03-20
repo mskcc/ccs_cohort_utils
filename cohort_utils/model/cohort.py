@@ -1,12 +1,8 @@
-import os,copy,sys
-#from .pair import Pair
-#from .sample import Sample
+import os, copy, sys
 import pandas as pd
 import json, jsonschema
 from cohort_utils import utils
 import cohort_utils
-import copy
-
 
 class Cohort:
     def __init__(self,**kwargs):
@@ -18,9 +14,9 @@ class Cohort:
             with open(crj_file, 'r') as f:
                 self.cohort = json.load(f)
         self.cohort = utils.clean_nones(self.cohort)
-        if not "type" in self.cohort:
+        if "type" not in self.cohort:
             self.cohort["type"] = "investigator"
-        if not "holdBamsAndFastqs" in self.cohort:
+        if "holdBamsAndFastqs" not in self.cohort:
             self.cohort["holdBamsAndFastqs"] = False
         self.schema = cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA
         self._validate_schema()
@@ -84,5 +80,7 @@ class Cohort:
         if date:
             mod_cohort["date"] = date
         return mod_cohort
+
+
 
 

@@ -19,9 +19,11 @@ def qc_complete_event(id,date,status,result,reason):
     x = EventHandler(type="qc",data={"primaryId":id,"date":date,"status":status,"result":result,"reason":reason})
     send_generic_event(x)
 
-def cohort_complete_event(cohort_json,date,status):
-    cohort_json["date"] = date
-    cohort_json["status"] = status
+def cohort_complete_event(cohort_json,date=None,status=None):
+    if date:
+        cohort_json["date"] = date
+    if status:
+        cohort_json["status"] = status
     x = EventHandler(type="cohort",data=cohort_json)
     send_generic_event(x)
 
