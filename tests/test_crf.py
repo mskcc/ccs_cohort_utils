@@ -24,7 +24,8 @@ class TestCRF(unittest.TestCase):
         my_cohort = crf_handle.to_cohort()
         assert len(my_cohort) == 2
         assert len(my_cohort.cohort["samples"]) == 2
-        my_cohort.to_crf()
+        crf_txt = my_cohort.to_crf()
+        print(crf_txt)
 
     def test_add_normals(self):
         pairing = cohort_utils.model.Pairing(file=PAIRINGFILE)
