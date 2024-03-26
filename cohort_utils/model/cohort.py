@@ -1,4 +1,4 @@
-import os, copy, sys
+import os, copy, sys, io
 import pandas as pd
 import json, jsonschema
 from cohort_utils import utils
@@ -24,20 +24,24 @@ class Cohort:
     def __len__(self):
         return len(self.cohort["samples"])
 
-    def to_crf(self,location=sys.stdout):
-        print(f"#endUsers:{','.join(self.cohort["endUsers"])}",file=location)
-        print(f"#pmUsers:{','.join(self.cohort["pmUsers"])}",file=location)
-        print(f"#projectTitle:{self.cohort["projectTitle"]}",file=location)
-        print(f"#projectSubtitle:{self.cohort["projectSubtitle"]}",file=location)
-        print(f"#holdBamsAndFastqs:{self.cohort["holdBamsAndFastqs"]}",file=location)
-        print("#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID",file=location)
+    def to_crf(self):
+        crf_string = ""
+        crf_string += f"#endUsers:{','.join(self.cohort["endUsers"])}\n"
+        crf_string += f"#pmUsers:{','.join(self.cohort["pmUsers"])}\n"
+        crf_string += f"#projectTitle:{self.cohort["projectTitle"]}\n"
+        crf_string += f"#projectSubtitle:{self.cohort["projectSubtitle"]}\n"
+        crf_string += f"#holdBamsAndFastqs:{self.cohort["holdBamsAndFastqs"]}\n"
+        crf_string += "#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID\n"
         df = pd.DataFrame(self.cohort["samples"])
         keep_col = "cmoId|normalCmoId|primaryId|normalPrimaryId".split("|")
         for i in keep_col:
             if i not in list(df):
                 df[i] = None
         df = df[keep_col]
-        df.to_csv(location,mode='a',index=False,header=False)
+        s = io.StringIO()
+        df.to_csv(s,index=False,header=False,sep="\t")
+        crf_string += s.getvalue()
+        return crf_string
 
     def fillin_normals(self,pairing):
         newcohort = copy.deepcopy(self)
