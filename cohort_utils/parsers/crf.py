@@ -20,7 +20,7 @@ class CRF_Handler:
         if isinstance(meta.get("pmUsers",None),str):
             meta["pmUsers"] = [i.strip().lower() for i in meta.get("pmUsers").split(",")]
         if isinstance(meta.get("holdBamsAndFastqs",False),str):
-            if meta.get("holdBamsAndFastqs").lower.strip() == "true":
+            if meta.get("holdBamsAndFastqs").lower().strip() == "true":
                 meta["holdBamsAndFastqs"] = True
         return meta
     
