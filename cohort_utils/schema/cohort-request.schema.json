@@ -65,13 +65,13 @@
                     "cmoId": {
                         "type":"string",
                         "description": "Stable tumor sample identifier",
-                        "pattern": "^C-[A-Z0-9]{6}-[LGPMTXR][0-9]{3}-d[0-9]{,2}$|^s_C_[A-Z0-9]{6}_[LGPMTXR][0-9]{3}_d[0-9]{,2}$"
+                        "pattern": "^C-[A-Z0-9]{6}-[LGPMTXR][0-9]{3}-d[0-9]{,2}$|^s_C_[A-Z0-9]{6}_[LGPMTXR][0-9]{3}_d[0-9]{,2}$|^(?:s_)?MCF.*|^(?:s_)?SK(?:[-_])?MEL.*|^(?:s_)?P[-_].*[-_]CellLines[-_].*"
 
                     },
                     "normalCmoId": {
                         "type":"string",
                         "description": "Stable normal sample identifier",
-                        "pattern": "^C-[A-Z0-9]{6}-[NG][0-9]{3}-d[0-9]{,2}$|^s_C_[A-Z0-9]{6}_[NG][0-9]{3}_d[0-9]{,2}$"
+                        "pattern": "^C-[A-Z0-9]{6}-[NG][0-9]{3}-d[0-9]{,2}$|^s_C_[A-Z0-9]{6}_[NG][0-9]{3}_d[0-9]{,2}$|^(?:s_)?MCF.*|^(?:s_)?SK(?:[-_])?MEL.*|^(?:s_)?P[-_].*[-_]CellLines[-_].*"
                     }
                 }
             },
