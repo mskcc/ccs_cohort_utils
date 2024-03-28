@@ -29,7 +29,8 @@ class Cohort:
         crf_string += f"#endUsers:{','.join(self.cohort["endUsers"])}\n"
         crf_string += f"#pmUsers:{','.join(self.cohort["pmUsers"])}\n"
         crf_string += f"#projectTitle:{self.cohort["projectTitle"]}\n"
-        crf_string += f"#projectSubtitle:{self.cohort["projectSubtitle"]}\n"
+        if "projectSubtitle" in self.cohort:
+            crf_string += f"#projectSubtitle:{self.cohort["projectSubtitle"]}\n"
         crf_string += f"#holdBamsAndFastqs:{self.cohort["holdBamsAndFastqs"]}\n"
         crf_string += "#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID\n"
         df = pd.DataFrame(self.cohort["samples"])
