@@ -1,6 +1,7 @@
 from cohort_utils.pb import tempo_pb2
 import os,shutil
 from . import utils
+import pandas as pd
 
 class SampleProtobuf_Handler:
     def __init__(self,**kwargs):
@@ -22,4 +23,28 @@ class SampleProtobuf_Handler:
             event.refAllele = row["Reference_Allele"]
             event.tumorSeqAllele1 = row["Tumor_Seq_Allele1"]
             event.tumorSeqAllele2 = row["Tumor_Seq_Allele2"]
+            all_fields = tempo_pb2.Event.DESCRIPTOR.fields
+            for field in all_fields:
+                if not field.type == 11:
+                    continue
+                sub_fields = field.message_type.fields
+                subevent = getattr(event,field.name)
+                for f in sub_fields:
+                    if pd.isnull(row[f.name]):
+                        continue
+                    try:
+                        if f.type < 3:
+                            setattr(subevent,f.name,float(row[f.name]))
+                        elif f.type in [3,4,5]:
+                            setattr(subevent,f.name,int(row[f.name]))
+                        elif f.type == 8:
+                            val = str(row[f.name]).lower()
+                            if val == "true":
+                                setattr(subevent,f.name,True)
+                            else:
+                                setattr(subevent,f.name,False)
+                        else:
+                            setattr(subevent,f.name,str(row[f.name]))
+                    except:
+                        pass
         return tempomessage
