@@ -18,6 +18,9 @@ class Cohort:
             self.cohort["type"] = "investigator"
         if "holdBamsAndFastqs" not in self.cohort:
             self.cohort["holdBamsAndFastqs"] = False
+        elif str(self.cohort["holdBamsAndFastqs"]).lower() == "true":
+            self.cohort["holdBamsAndFastqs"] = True
+        else: self.cohort["holdBamsAndFastqs"] = False
         self.schema = cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA
         self._validate_schema()
 
