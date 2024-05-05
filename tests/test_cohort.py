@@ -18,7 +18,7 @@ class TestCRJ(unittest.TestCase):
         assert mycohort.cohort["projectSubtitle"] == "A longer description"
         assert mycohort.cohort["cohortId"] == "CCS_PPPQQQQ"
 
-    def test_cohort_fillinids(self):
+    def test_cohort_update_ids(self):
         with open(COHORT_REQUEST_JSON, 'r') as f:
             crj_data = json.load(f)
         mycohort = cohort_utils.model.Cohort(crj = crj_data)
