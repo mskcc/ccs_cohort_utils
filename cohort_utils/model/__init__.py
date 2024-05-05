@@ -7,5 +7,5 @@
 from .cohort import Cohort
 from .pair import Pair
 from .sample import Sample
-from .voyager_tracker import VoyagerTracker
+from .voyager_tracker import VoyagerTempoMPGen
 from .pairing import Pairing

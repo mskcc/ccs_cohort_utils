@@ -1,0 +1,6 @@
+TUMOR_ID	NORMAL_ID
+A_T	A_N
+B_T	B_N
+C_T	C_N
+D_T	D_N
+E_T	E_N
