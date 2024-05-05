@@ -29,21 +29,19 @@
         },
         "projectTitle":{
             "type":"string",
-            "description":"PMs managing the cohort",
-            "items": {
-                "type": "string"
-            }
+            "description":"Project title"
         },
         "projectSubtitle":{
             "type":"string",
-            "description":"PMs managing the cohort",
-            "items": {
-                "type": "string"
-            }
+            "description":"Project subtitle"
         },
-        "holdBamsAndFastqs": {
+        "deliverBam": {
             "type": "boolean",
-            "description": "Whether to deliver Fastqs and Bams or not"
+            "description":"Whether to deliver bams or not"
+        },
+        "deliverFastq": {
+            "type": "boolean",
+            "description":"Whether to deliver fastqs or not"
         },
         "samples":{
             "type":"array",
@@ -65,7 +63,7 @@
                     "cmoId": {
                         "type":"string",
                         "description": "Stable tumor sample identifier",
-                        "pattern": "^C-[A-Z0-9]{6}-[LGPMTXR][0-9]{3}-d[0-9]{,2}$|^s_C_[A-Z0-9]{6}_[LGPMTXR][0-9]{3}_d[0-9]{,2}$|^(?:s_)?MCF.*|^(?:s_)?SK(?:[-_])?MEL.*|^(?:s_)?P[-_].*[-_]CellLines[-_].*"
+                        "pattern": "^C-[A-Z0-9]{6}-[LGPMTXRF][0-9]{3}-d[0-9]{,2}$|^s_C_[A-Z0-9]{6}_[LGPMTXRF][0-9]{3}_d[0-9]{,2}$|^(?:s_)?MCF.*|^(?:s_)?SK(?:[-_])?MEL.*|^(?:s_)?P[-_].*[-_]CellLines[-_].*"
 
                     },
                     "normalCmoId": {

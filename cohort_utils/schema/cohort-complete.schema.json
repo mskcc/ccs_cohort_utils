@@ -29,17 +29,11 @@
         },
         "projectTitle":{
             "type":"string",
-            "description":"PMs managing the cohort",
-            "items": {
-                "type": "string"
-            }
+            "description":"Project title"
         },
         "projectSubtitle":{
             "type":"string",
-            "description":"PMs managing the cohort",
-            "items": {
-                "type": "string"
-            }
+            "description":"Project subtitle"
         },
         "samples":{
             "type":"array",
