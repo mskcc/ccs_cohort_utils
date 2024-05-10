@@ -12,7 +12,6 @@ if METADB_PROFILE not in ["dev","prod"]:
 
 if METADB_PROFILE == "dev":
     METADB_NATS_URL = "nats://smile-dev.mskcc.org:4222"
-    METADB_NATS_DURABLE = os.environ.get("TEMPO_METADB_NATS_DURABLE", "")
     METADB_NATS_FILTER_SUBJECT = "MDB_STREAM.consumers.*"
     BAM_COMPLETE_TOPIC = "MDB_STREAM.server.tempo.wes.bam-complete"
     QC_COMPLETE_TOPIC = "MDB_STREAM.server.tempo.wes.qc-complete"
