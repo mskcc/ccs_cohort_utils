@@ -34,4 +34,4 @@ class EventHandler:
             args["data"] = json.dumps(self.data).encode()
         else:
             args["data"] = self.data.SerializeToString()
-        loop.run_until_complete(nats_send_message.run(loop,args))
+        loop.run_until_complete(nats_send_message.run(loop,args, False))

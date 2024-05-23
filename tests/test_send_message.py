@@ -2,6 +2,7 @@ import unittest
 import pandas as pd
 import json
 import cohort_utils
+import asyncio
 
 MAF  = "./data/mut_somatic.maf"
 MAF2 = "./data/mut_somatic_2samples.maf"
@@ -49,12 +50,21 @@ class TestSendMessage(unittest.TestCase):
         self.assertRaises(Exception, cohort_utils.generate_updates.bam_complete_event,**inputs)
 
     def test_send_cbio_maf_update(self):
-        cohort_utils.generate_updates.cbio_multisample_event(MAF)
+        cohort_utils.generate_updates.cbioportal_multisample_event(MAF)
     
     def test_send_cbio_mixed_maf_update(self):
-        cohort_utils.generate_updates.cbio_multisample_event(MAF2)
+        cohort_utils.generate_updates.cbioportal_multisample_event(MAF2)
 
-
+    def test_nats_error(self):
+        loop = asyncio.get_event_loop()
+        args = dict()
+        args["cert"] = cohort_utils.nats.settings.NATS_SSL_CERTFILE
+        args["key"] = cohort_utils.nats.settings.NATS_SSL_KEYFILE
+        args["servers"] = "nats://{}:{}@{}".format(cohort_utils.nats.settings.METADB_USERNAME,cohort_utils.nats.settings.METADB_PASSWORD,cohort_utils.nats.settings.METADB_NATS_URL.split("//")[1])
+        args["subject"] = "MDB_STREAM.tempo.wes.wrong"
+        args["data"] = json.dumps({"id":"12346_A_1","status":"PASS","date":"2022-10-30 16:05"}).encode()
+        loop.run_until_complete(cohort_utils.nats.nats_send_message.run(loop,args,True))
+        self.assertRaises(Exception, loop.run_until_complete, cohort_utils.nats.nats_send_message.run(loop,args,False))
 
 
 if __name__ == "__main__":

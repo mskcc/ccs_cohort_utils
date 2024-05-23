@@ -22,11 +22,14 @@ def usage():
     args = parser.parse_args()
     return vars(args)
 
-async def run(loop,args):
+async def run(loop,args, ignore_error=True, verbose=False):
     nc = NATS()
 
     async def error_cb(e):
-        print("Error:", e)
+        if ignore_error:
+            print("Error:", e)
+        else:
+            raise Exception(e)
 
     async def closed_cb():
         print("Connection to NATS is closed.")
@@ -36,6 +39,8 @@ async def run(loop,args):
 
     options = {"error_cb": error_cb, "closed_cb": closed_cb, "reconnected_cb": reconnected_cb}
     
+    if verbose:
+        print(args)
     if args.get("creds"):
         print("using creds")
         options["user_credentials"] = args["creds"]
