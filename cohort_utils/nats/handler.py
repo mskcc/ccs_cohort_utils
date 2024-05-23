@@ -24,7 +24,7 @@ class EventHandler:
             print(type(self.data))
             raise TypeError("Type or format of the event handler do not match the data: {} and {}".format(self.type, self.format))
 
-    def send_message(self,loop):
+    def send_message(self,loop,ignore_error=True):
         args = dict()
         args["cert"] = settings.NATS_SSL_CERTFILE
         args["key"] = settings.NATS_SSL_KEYFILE
@@ -34,4 +34,4 @@ class EventHandler:
             args["data"] = json.dumps(self.data).encode()
         else:
             args["data"] = self.data.SerializeToString()
-        loop.run_until_complete(nats_send_message.run(loop,args, False))
+        loop.run_until_complete(nats_send_message.run(loop,args, ignore_error))

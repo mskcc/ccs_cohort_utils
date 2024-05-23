@@ -3,17 +3,14 @@ from cohort_utils.nats import EventHandler
 import asyncio
 from cohort_utils import utils
 
-def send_generic_event(handler_event):
-    loop = asyncio.get_event_loop()
-    handler_event.send_message(loop)
-
 def send_event(func):
     def wrapper_func(*args, **kwargs):
+        ignore_error = kwargs.pop('ignore_error',True)
         msg_data = func(*args, **kwargs)
         event_type = func.__name__.split("_")[0]
         handler_event = EventHandler(type=event_type, data=msg_data)
         loop = asyncio.get_event_loop()
-        handler_event.send_message(loop)
+        handler_event.send_message(loop,ignore_error=ignore_error)
     return wrapper_func
 
 @send_event
@@ -36,12 +33,12 @@ def cohort_complete_event(cohort_json,date=None,status=None):
         cohort_json["status"] = status
     return cohort_json
 
-def cbioportal_multisample_event(maf):
+def cbioportal_multisample_event(maf,ignore_error=True):
     mixed_maf = utils.read_maf(maf)
     unique_values = mixed_maf['Tumor_Sample_Barcode'].unique()
     for value in unique_values:
         # Filter rows where 'A' matches the current value
-        cbioportal_singlesample_event(mixed_maf[mixed_maf['Tumor_Sample_Barcode'] == value])
+        cbioportal_singlesample_event(mixed_maf[mixed_maf['Tumor_Sample_Barcode'] == value],ignore_error=ignore_error)
 
 @send_event
 def cbioportal_singlesample_event(maf_table):
