@@ -15,13 +15,13 @@ def categorize_id(id):
         id_type = "dmpPatientId"
     elif re.match('^P-[0-9]{7}-[TN][0-9]{2}',id):
         id_type = "dmpSampleName"
-    elif re.match('^[0-9]{4,5}-[A-Z]{2}-[0-9]+$',id):
+    elif re.match('^[0-9]{4,5}-[A-Z]{1,2}-[0-9]+$',id):
         id_type = "primaryId"
     elif re.match('^[0-9]{4,5}-[0-9]+$',id):
         id_type = "primaryId"
     elif re.match('^[0-9]{4,5}$',id):
         id_type = "requestId"
-    elif re.match('^[0-9]{4,5}-[A-Z]{2}$',id):
+    elif re.match('^[0-9]{4,5}-[A-Z]{1,2}$',id):
         id_type = "requestId"
     return id_type
 
