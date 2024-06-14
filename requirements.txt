@@ -7,3 +7,5 @@ configparser
 protobuf
 google-cloud-translate
 google
+uuid
+pytest

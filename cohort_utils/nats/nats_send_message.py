@@ -6,7 +6,9 @@ import os
 from nats.aio.client import Client as NATS
 import ssl
 import configparser
+import logging
 
+logger = logging.getLogger(__name__)
 
 def usage():
     parser = argparse.ArgumentParser()
@@ -22,27 +24,26 @@ def usage():
     args = parser.parse_args()
     return vars(args)
 
-async def run(loop,args, ignore_error=True, verbose=False):
+async def run(loop, args, ignore_error=True):
     nc = NATS()
 
     async def error_cb(e):
         if ignore_error:
-            print("Error:", e)
+            logger.warning(e)
         else:
+            logger.error(e)
             raise Exception(e)
 
     async def closed_cb():
-        print("Connection to NATS is closed.")
+        logger.warning("Connection to NATS is closed.")
 
     async def reconnected_cb():
-        print(f"ReConnected to NATS at {nc.connected_url.netloc}...")
+        logger.warning(f"ReConnected to NATS at {nc.connected_url.netloc}...")
 
     options = {"error_cb": error_cb, "closed_cb": closed_cb, "reconnected_cb": reconnected_cb}
-    
-    if verbose:
-        print(args)
+
     if args.get("creds"):
-        print("using creds")
+        logger.warning("Using credentials")
         options["user_credentials"] = args["creds"]
     """
     config_dict = dict()
@@ -66,7 +67,7 @@ async def run(loop,args, ignore_error=True, verbose=False):
     """
 
     if args["cert"] and args["key"]:
-        print("Creating context based on provided cert and key")
+        logger.info("Creating context based on provided cert and key")
         #ssl._create_default_https_context = ssl._create_unverified_context
         ssl_ctx = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
         ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -77,17 +78,16 @@ async def run(loop,args, ignore_error=True, verbose=False):
         options["tls"] = ssl_ctx
 
     try:
-        print("connecting")
         if len(args["servers"]) > 0:
             options["servers"] = args["servers"]
-
-        print(options)
+        logger.info('Connecting with the following options:\n{}'.format(options))
         await nc.connect(**options)
+        logger.info(f"Connected to NATS at {nc.connected_url.netloc}...")
     except Exception as e:
-        print("error connecting")
-        print(e)
+        logger.error("Error connecting")
+        logger.error(e)
 
-    print(f"Connected to NATS at {nc.connected_url.netloc}...")
+
     # msg = await nc.request(args["subject"], args["data"].encode())
     # subject = msg.subject
     # reply = msg.reply
@@ -102,8 +102,8 @@ async def run(loop,args, ignore_error=True, verbose=False):
         data_str = json.dumps(data)
     print(data_str)
     """
-
-    await nc.publish(args["subject"], args["data"])
+    logger.debug('Publishing the following message:\nSubject:{}\nPayload:{}\nHeaders:{}'.format(args["subject"], args["data"], str(args.get("headers", None))))
+    await nc.publish(args["subject"], args["data"], headers = args.get("headers", None))
     await nc.close()
 
 if __name__ == "__main__":

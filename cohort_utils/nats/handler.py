@@ -2,6 +2,8 @@ from . import settings, nats_send_message
 #import nats_send_message
 import json, jsonschema
 from cohort_utils.pb import tempo_pb2
+import uuid
+
 
 class EventHandler:
     def __init__(self,**kwargs):
@@ -15,6 +17,16 @@ class EventHandler:
         self.format = settings.TYPE_SUBJECT_MAPPING[self.type]["format"]
         self.schema = settings.TYPE_SUBJECT_MAPPING[self.type]["schema"]
         self.data = kwargs.pop("data")
+        if settings.TYPE_SUBJECT_MAPPING[self.type].get("id_name",None):
+            self.headers = {
+                "Nats-Msg-Subject": self.subject,
+                "Nats-Msg-Id": self.data[settings.TYPE_SUBJECT_MAPPING[self.type].get("id_name")]
+            }
+        else:
+            self.headers = {
+                "Nats-Msg-Subject": self.subject,
+                "Nats-Msg-Id": str(uuid.uuid4())
+            }
         self._validate_schema()
 
     def _validate_schema(self):
@@ -34,4 +46,7 @@ class EventHandler:
             args["data"] = json.dumps(self.data).encode()
         else:
             args["data"] = self.data.SerializeToString()
+        if hasattr(self, 'headers'):
+            args["headers"] = self.headers
+
         loop.run_until_complete(nats_send_message.run(loop,args, ignore_error))

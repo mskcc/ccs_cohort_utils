@@ -4,12 +4,16 @@ import json,jsonschema
 import pandas as pd
 import tempfile
 import os
+import logging
+logging.basicConfig(level=logging.DEBUG)
+from utils import run_test
 
 COHORT_COMPLETE_JSON  = "./data/json/cohort-complete.example.json"
 COHORT_REQUEST_JSON   = "./data/json/COHORT1.cohort.json"
 COHORT_REQUEST_JSON2  = "./data/json/COHORT2.cohort.json"
 
 class TestCRJ(unittest.TestCase):
+    @run_test
     def test_crj_obj(self):
         with open(COHORT_COMPLETE_JSON, 'r') as f:
             crj_data = json.load(f)
@@ -18,6 +22,7 @@ class TestCRJ(unittest.TestCase):
         assert mycohort.cohort["projectSubtitle"] == "A longer description"
         assert mycohort.cohort["cohortId"] == "CCS_PPPQQQQ"
 
+    @run_test
     def test_cohort_update_ids(self):
         with open(COHORT_REQUEST_JSON, 'r') as f:
             crj_data = json.load(f)
@@ -32,6 +37,7 @@ class TestCRJ(unittest.TestCase):
         newcohort = mycohort.update_ids(metadata_table)
         assert newcohort.cohort['samples'][0]['primaryId'] == '78787_AB_1'
 
+    @run_test
     def test_cohort_addnormals(self):
         with open(COHORT_REQUEST_JSON2, 'r') as f:
             crj_data = json.load(f)

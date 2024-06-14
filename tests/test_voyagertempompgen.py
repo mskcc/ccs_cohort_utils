@@ -1,10 +1,12 @@
 import unittest
 import cohort_utils
+from utils import run_test
 
 VOYAGER1  = "./data/voyager1/"
 VOYAGER2  = "./data/voyager2/"
 
 class TestVoyager(unittest.TestCase):
+    @run_test
     def test_voyager_compare(self):
         voyager1 = cohort_utils.model.VoyagerTempoMPGen(folderPath = VOYAGER1)
         voyager2 = cohort_utils.model.VoyagerTempoMPGen(folderPath = VOYAGER2)

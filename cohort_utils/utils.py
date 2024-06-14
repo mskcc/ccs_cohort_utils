@@ -3,6 +3,9 @@ import numpy as np
 import csv
 import requests
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
+
 
 def categorize_id(id):
     id = normalize_id(id)
@@ -77,8 +80,11 @@ def convert_cmoId_to_primaryId(id,metadata_table=None):
         query = query[2:]
     result = None
     try:
+        logger.debug("Converting cmoId {} to primaryId using local metadata table".format(query))
         result = metadata_table[metadata_table['cmoSampleName'].isin([id])]['primaryId'].tolist()[0]
     except Exception as e:
+        logger.debug("cmoId {} not found in local metadata table".format(query))
+        logger.debug("Converting cmoId {} to primaryId using smile query".format(query))
         result = search_smile_inputid(query).get("primaryId",None)
     return result
 
@@ -86,8 +92,11 @@ def convert_primaryId_to_cmoId(id,metadata_table=None):
     query = id
     result = None
     try:
+        logger.debug("Converting primaryId {} to cmoId using local metadata table".format(query))
         result = metadata_table[metadata_table['primaryId'].isin([query])]['cmoSampleName'].tolist()[0]
     except Exception as e:
+        logger.debug("primaryId {} not found in local metadata table".format(query))
+        logger.debug("Converting primaryId {} to cmoId using smile query".format(query))
         result = search_smile_inputid(query).get("cmoSampleName",None)
     return result
 

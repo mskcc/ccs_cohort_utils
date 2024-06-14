@@ -9,6 +9,8 @@ import jsonschema
 from cohort_utils import utils
 import cohort_utils
 from .voyager_tracker import VoyagerTempoMPGen
+import logging
+logger = logging.getLogger(__name__)
 
 class Cohort:
     def __init__(self,**kwargs):
@@ -19,6 +21,7 @@ class Cohort:
         else:
             with open(crj_file, 'r') as f:
                 self.cohort = json.load(f)
+        logger.debug('Ingesting cohortId: {}'.format(self.cohort["cohortId"]))
         self.cohort = utils.clean_nones(self.cohort)
         if "type" not in self.cohort:
             self.cohort["type"] = "investigator"
