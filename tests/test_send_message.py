@@ -14,7 +14,7 @@ COHORT_REQUEST_JSON = "./data/json/COHORT1.cohort.json"
 class TestSendMessage(unittest.TestCase):
     @run_test
     def test_send_bam_update(self):
-        inputs = {"id":"12346_A_1","status":"PASS","date":"2022-10-30 16:05"}
+        inputs = {"id":"13608_B_1","status":"FAIL","date":"2022-10-30 16:05"}
         cohort_utils.generate_updates.bam_complete_event(**inputs,ignore_error=False)
     
     @run_test
