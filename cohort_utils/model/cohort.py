@@ -91,6 +91,8 @@ class Cohort:
             del mod_cohort["deliverBam"]
         if "deliverFastq" in mod_cohort:
             del mod_cohort["deliverFastq"]
+        if "holdBamsAndFastqs" in mod_cohort:
+            del mod_cohort["holdBamsAndFastqs"]
         for i in mod_cohort["samples"]:
             if "cmoId" in i:
                 del i["cmoId"]
