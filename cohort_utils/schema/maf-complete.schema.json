@@ -25,5 +25,6 @@
             "enum": ["PASS","FAIL"]
         }
     },
-    "required": ["primaryId","date","normalPrimaryId","status"]
+    "required": ["primaryId","date","normalPrimaryId","status"],
+    "additionalProperties":false
 }
