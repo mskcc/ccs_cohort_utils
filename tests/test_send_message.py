@@ -71,7 +71,9 @@ class TestSendMessage(unittest.TestCase):
         args = dict()
         args["cert"] = cohort_utils.nats.settings.NATS_SSL_CERTFILE
         args["key"] = cohort_utils.nats.settings.NATS_SSL_KEYFILE
-        args["servers"] = "nats://{}:{}@{}".format(cohort_utils.nats.settings.METADB_USERNAME,cohort_utils.nats.settings.METADB_PASSWORD,cohort_utils.nats.settings.METADB_NATS_URL.split("//")[1])
+        args["url"] = cohort_utils.nats.settings.METADB_NATS_URL
+        args["username"] = cohort_utils.nats.settings.METADB_USERNAME
+        args["password"] = cohort_utils.nats.settings.METADB_PASSWORD
         args["subject"] = "MDB_STREAM.tempo.wes.wrong"
         args["data"] = json.dumps({"id":"12346_A_1","status":"PASS","date":"2022-10-30 16:05"}).encode()
         loop.run_until_complete(cohort_utils.nats.nats_send_message.run(loop,args,True))
