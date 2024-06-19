@@ -78,11 +78,11 @@ async def run(loop, args, ignore_error=True):
         options["tls"] = ssl_ctx
 
     try:
-        if len(args["servers"]) > 0:
-            options["servers"] = args["servers"]
-        logger.info('Connecting with the following options:\n{}'.format(options))
+        if args.get("url",None):
+            options["servers"] = "nats://{}:{}@{}".format(args["username"],args["password"],args["url"].split("//")[1])
+            logger.info(f"Connecting to NATS at {args["url"]} as {args["username"]}")
         await nc.connect(**options)
-        logger.info(f"Connected to NATS at {nc.connected_url.netloc}...")
+        logger.info(f"Connected")
     except Exception as e:
         logger.error("Error connecting")
         logger.error(e)
@@ -105,6 +105,7 @@ async def run(loop, args, ignore_error=True):
     logger.debug('Publishing the following message:\nSubject:{}\nPayload:{}\nHeaders:{}'.format(args["subject"], args["data"], str(args.get("headers", None))))
     await nc.publish(args["subject"], args["data"], headers = args.get("headers", None))
     await nc.close()
+    logger.info(f"Closing connection")
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()

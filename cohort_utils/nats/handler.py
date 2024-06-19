@@ -40,7 +40,9 @@ class EventHandler:
         args = dict()
         args["cert"] = settings.NATS_SSL_CERTFILE
         args["key"] = settings.NATS_SSL_KEYFILE
-        args["servers"] = "nats://{}:{}@{}".format(settings.METADB_USERNAME,settings.METADB_PASSWORD,settings.METADB_NATS_URL.split("//")[1])
+        args["url"] = settings.METADB_NATS_URL
+        args["username"] = settings.METADB_USERNAME
+        args["password"] = settings.METADB_PASSWORD
         args["subject"] = self.subject
         if self.format == "json":
             args["data"] = json.dumps(self.data).encode()
