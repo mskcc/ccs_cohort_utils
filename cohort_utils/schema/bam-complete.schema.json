@@ -7,7 +7,7 @@
         "primaryId": {
             "type": "string",
             "description": "Stable sample identifier",
-            "pattern": "^\\d{5}_(?:[A-Z]*_)?\\d*$"
+            "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
         },
         "date": {
             "type": "string",

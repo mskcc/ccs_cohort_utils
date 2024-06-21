@@ -44,13 +44,13 @@
                     "primaryId": {
                         "type":"string",
                         "description": "Stable tumor sample identifier",
-                        "pattern": "^\\d{5}_(?:[A-Z]*_)?\\d*$"
+                        "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
 
                     },
                     "normalPrimaryId": {
                         "type":"string",
                         "description": "Stable normal sample identifier",
-                        "pattern": "^\\d{5}_(?:[A-Z]*_)?\\d*$"
+                        "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
                     }
                 },
                 "required":["primaryId","normalPrimaryId"],

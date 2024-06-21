@@ -18,7 +18,7 @@ class TestCRJ(unittest.TestCase):
         with open(COHORT_COMPLETE_JSON, 'r') as f:
             crj_data = json.load(f)
         mycohort = cohort_utils.model.Cohort(crj = crj_data)
-        assert len(mycohort) == 3
+        assert len(mycohort) == 5
         assert mycohort.cohort["projectSubtitle"] == "A longer description"
         assert mycohort.cohort["cohortId"] == "CCS_PPPQQQQ"
 
