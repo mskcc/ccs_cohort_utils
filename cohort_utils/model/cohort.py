@@ -85,7 +85,7 @@ class Cohort:
                     i["normalCmoId"] = utils.nice_cmo_id(utils.convert_primaryId_to_cmoId(i["normalPrimaryId"],metadata_table))
                 except Exception as e:
                     pass
-            elif i["normalCmoId"] and not i.get("normalPrimaryId",None):
+            elif i.get("normalCmoId",None) and not i.get("normalPrimaryId",None):
                 try:
                     i["normalPrimaryId"] = utils.convert_cmoId_to_primaryId(i["normalCmoId"],metadata_table)
                 except Exception as e:
