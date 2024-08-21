@@ -9,6 +9,10 @@
             "description": "Stable sample identifier",
             "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
         },
+        "cmoId": {
+            "type": "string",
+            "description": "Stable sample identifier"
+        },
         "date": {
             "type": "string",
             "description": "Date of when the BAM alignment completed (YYYY-MM-DD HH:MM)",
@@ -20,6 +24,14 @@
             "enum": ["PASS","FAIL"]
         }
     },
-    "required": ["primaryId","date","status"],
+    "required": ["date","status"],
+    "anyOf": [
+        {
+            "required": ["primaryId"]
+        },
+        {
+            "required": ["cmoId"]
+        }
+    ],
     "additionalProperties":false
 }

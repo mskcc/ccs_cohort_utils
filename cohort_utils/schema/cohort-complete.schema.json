@@ -53,7 +53,14 @@
                         "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
                     }
                 },
-                "required":["primaryId","normalPrimaryId"],
+                "oneOf": [
+                    {
+                        "required": ["primaryId","normalPrimaryId"]
+                    },
+                    {
+                        "required": ["cmoId","normalCmoId"]
+                    }
+                ],
                 "additionalProperties":false
             },
             "uniqueItems": true

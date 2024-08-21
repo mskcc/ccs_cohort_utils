@@ -68,7 +68,15 @@
                         "type":"string",
                         "description": "Stable normal sample identifier"
                     }
-                }
+                },
+                "oneOf": [
+                    {
+                        "required": ["primaryId"]
+                    },
+                    {
+                        "required": ["cmoId"]
+                    }
+                ]
             },
             "uniqueItems": true
         },
