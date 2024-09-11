@@ -51,6 +51,14 @@
                         "type":"string",
                         "description": "Stable normal sample identifier",
                         "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
+                    },
+                    "cmoId":{
+                        "type":"string",
+                        "description":"Stable sample identifier of the normal sample"
+                    },
+                    "normalCmoId":{
+                        "type":"string",
+                        "description":"Stable sample identifier of the normal sample"
                     }
                 },
                 "anyOf": [
