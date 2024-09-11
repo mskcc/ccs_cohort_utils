@@ -69,7 +69,7 @@
                         "description": "Stable normal sample identifier"
                     }
                 },
-                "oneOf": [
+                "anyOf": [
                     {
                         "required": ["primaryId"]
                     },

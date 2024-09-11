@@ -9,8 +9,21 @@ import jsonschema
 from cohort_utils import utils
 import cohort_utils
 from .voyager_tracker import VoyagerTempoMPGen
+from .sample import Sample
 import logging
 logger = logging.getLogger(__name__)
+
+crf_cohort_sample_attr_map = {
+    "TUMOR_ID":"cmoId",
+    "NORMAL_ID":"normalCmoId",
+    "TUMOR_PRIMARY_ID":"primaryId",
+    "NORMAL_PRIMARY_ID":"normalPrimaryId",
+    "ONCOTREECODE":"oncotreeCode",
+    "SAMPLENAME":"sampleName",
+    "INVESTIGATORSAMPLEID":"investigatorSampleId",
+    "NORMAL_SAMPLENAME":"normalSampleName",
+    "NORMAL_INVESTIGATORSAMPLEID":"normalInvestigatorSampleId"
+}
 
 class Cohort:
     def __init__(self,**kwargs):
@@ -55,6 +68,27 @@ class Cohort:
         df.to_csv(s,index=False,header=False,sep="\t")
         crf_string += s.getvalue()
         return crf_string
+    
+    def to_crf_extend(self):
+        crf_string = ""
+        crf_string += f"#endUsers:{','.join(self.cohort["endUsers"])}\n"
+        crf_string += f"#pmUsers:{','.join(self.cohort["pmUsers"])}\n"
+        crf_string += f"#projectTitle:{self.cohort["projectTitle"]}\n"
+        if "projectSubtitle" in self.cohort:
+            crf_string += f"#projectSubtitle:{self.cohort["projectSubtitle"]}\n"
+        crf_string += f"#deliverBam:{self.cohort["deliverBam"]}\n"
+        crf_string += f"#deliverFastq:{self.cohort["deliverFastq"]}\n"
+        crf_string += "#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID\tONCOTREECODE\tSAMPLENAME\tINVESTIGATORSAMPLEID\tNORMAL_SAMPLENAME\tNORMAL_INVESTIGATORSAMPLEID\n"
+        df = pd.DataFrame(self.cohort["samples"])
+        keep_col = "cmoId|normalCmoId|primaryId|normalPrimaryId|oncotreeCode|sampleName|investigatorSampleId|normalSampleName|normalInvestigatorSampleId".split("|")
+        for i in keep_col:
+            if i not in list(df):
+                df[i] = None
+        df = df[keep_col]
+        s = io.StringIO()
+        df.to_csv(s,index=False,header=False,sep="\t")
+        crf_string += s.getvalue()
+        return crf_string
 
     def fillin_normals(self,pairing):
         newcohort = copy.deepcopy(self)
@@ -67,29 +101,44 @@ class Cohort:
                 i["normalCmoId"] = n_id
         return newcohort
 
-    def update_ids(self,metadata_table=None):
+    def update_with_metadata_table(self,metadata_table):
         newcohort = copy.deepcopy(self)
         for i in newcohort.cohort["samples"]:
-            if i.get("primaryId",None):
-                try:
-                    i["cmoId"] = utils.nice_cmo_id(utils.convert_primaryId_to_cmoId(i["primaryId"],metadata_table))
-                except Exception as e:
-                    pass
-            elif i["cmoId"] and not i.get("primaryId",None):
-                try:
-                    i["primaryId"] = utils.convert_cmoId_to_primaryId(i["cmoId"],metadata_table)
-                except Exception as e:
-                    pass
-            if i.get("normalPrimaryId",None):
-                try:
-                    i["normalCmoId"] = utils.nice_cmo_id(utils.convert_primaryId_to_cmoId(i["normalPrimaryId"],metadata_table))
-                except Exception as e:
-                    pass
-            elif i.get("normalCmoId",None) and not i.get("normalPrimaryId",None):
-                try:
-                    i["normalPrimaryId"] = utils.convert_cmoId_to_primaryId(i["normalCmoId"],metadata_table)
-                except Exception as e:
-                    pass
+            try:
+                this_sample = Sample(**{k:i[k] for k in ["cmoId","primaryId"] if k in i})
+                this_sample.update_sample_with_metadata(metadata_table)
+                #logger.debug(str(this_sample.metadata))
+                for k in this_sample.metadata:
+                    i[k] = this_sample.metadata[k]
+            except Exception as e:
+                print(e)
+            try:
+                this_sample = Sample(**{k:i["normal" + k[0].upper() + k[1:]] for k in ["cmoId","primaryId"] if "normal" + k[0].upper() + k[1:] in i})
+                this_sample.update_sample_with_metadata(metadata_table)
+                for k in this_sample.metadata:
+                    i["normal" + k[0].upper() + k[1:]] = this_sample.metadata[k]
+            except Exception as e:
+                print(e)
+        return newcohort
+    
+    def update_with_smile(self,overwrite=False,additional_required_fields=["oncotreeCode"]):
+        newcohort = copy.deepcopy(self)
+        for i in newcohort.cohort["samples"]:
+            try:
+                this_sample = Sample(**{k:i[k] for k in ["cmoId","primaryId"] if k in i})
+                this_sample.update_sample_with_smile(overwrite=overwrite,additional_required_fields=additional_required_fields)
+                for k in this_sample.metadata:
+                    i[k] = this_sample.metadata[k]
+            except Exception as e:
+                print(e)
+            try:
+                this_sample = Sample(**{k:i["normal" + k[0].upper() + k[1:]] for k in ["cmoId","primaryId"] if "normal" + k[0].upper() + k[1:] in i})
+                this_sample.update_sample_with_smile(overwrite=overwrite,additional_required_fields=additional_required_fields)
+                for k in this_sample.metadata:
+                    if k != "oncotreeCode":
+                        i["normal" + k[0].upper() + k[1:]] = this_sample.metadata[k]
+            except Exception as e:
+                print(e)
         return newcohort
 
     def _validate_schema(self,schema=None):
@@ -97,7 +146,7 @@ class Cohort:
             schema = self.schema
         jsonschema.validators.validate(instance=self.cohort, schema=schema)
 
-    def cohort_complete_generate(self,status=None,date=None):
+    def cohort_complete_generate(self,status=None,date=None,use_cmoid=False):
         mod_cohort = copy.deepcopy(self.cohort)
         if "deliverBam" in mod_cohort:
             del mod_cohort["deliverBam"]
@@ -105,11 +154,14 @@ class Cohort:
             del mod_cohort["deliverFastq"]
         if "holdBamsAndFastqs" in mod_cohort:
             del mod_cohort["holdBamsAndFastqs"]
-        for i in mod_cohort["samples"]:
-            if "cmoId" in i:
-                del i["cmoId"]
-            if "normalCmoId" in i:
-                del i["normalCmoId"]
+        if use_cmoid:
+            keep_sample_fields = ["cmoId","normalCmoId"]
+        else:
+            keep_sample_fields = ["primaryId","normalPrimaryId"]
+        for idx, i in enumerate(mod_cohort["samples"]):
+            mod_cohort["samples"][idx] = {k:i[k] for k in keep_sample_fields if k in i}
+        #mod_cohort["samples"][idx] = { k:utils.normalize_id(i[k]) if k in ["cmoId","normalCmoId"] else (k:i[k]) for k in keep_sample_fields }
+        mod_cohort["samples"][idx] = {k:(utils.normalize_id(i[k]) if k in ["cmoId","normalCmoId"] else i[k]) for k in keep_sample_fields }
         if status:
             mod_cohort["status"] = status
         if date:

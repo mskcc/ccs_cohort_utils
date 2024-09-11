@@ -100,12 +100,38 @@ def convert_primaryId_to_cmoId(id,metadata_table=None):
         result = search_smile_inputid(query).get("cmoSampleName",None)
     return result
 
+def get_sample_data_from_metadata_table(metadata_table,cmoId=None,primaryId=None):
+    if primaryId:
+        result = metadata_table[metadata_table['primaryId'].isin([primaryId])]['cmoSampleName'].tolist()[0]
+    elif cmoId:
+        result = metadata_table[metadata_table['cmoSampleName'].isin([cmoId])]['primaryId'].tolist()[0]
+    else:
+        logger.error("cmoId or primaryId required for input")
+        raise ValueError("cmoId or primaryId required for input")
+    return result
+
+def get_sample_data_from_smile(cmoId=None,primaryId=None):
+    if primaryId:
+        query = primaryId
+    elif cmoId:
+        query = normalize_id(cmoId)
+    else:
+        logger.error("cmoId or primaryId required for input")
+        raise ValueError("cmoId or primaryId required for input")
+    result = search_smile_inputid(query)
+    keep_fields = ["primaryId","cmoSampleName","sampleName","investigatorSampleId","oncotreeCode"]
+    result_final = {k:result[k] for k in result if k in keep_fields}
+    return result_final
 
 def search_smile_inputid(query):
     #apiRoute = "{}/{}/{}".format(SMILE_REST_ENDPOINT,"sampleById",query)
     apiRoute = "{}/{}/{}".format("http://smile.mskcc.org:3000","sampleById",query)
     sample_metadata = requests.get(apiRoute, timeout=360000).json()
     return sample_metadata
+
+def get_oncotreeCode(query):
+    result = search_smile_inputid(normalize_id(query)).get("oncotreeCode",None)
+    return result
 
 def search_inputid_alt(id,metadata_table):
     if categorize_id(id) == "cmoSampleName":

@@ -17,6 +17,12 @@ class validateschema(unittest.TestCase):
         with open(BAM_COMPLETE,'r') as fh:
             instance = json.load(fh)
         jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.BAM_COMPLETE_JSON_SCHEMA)
+        instance_bad = {k:instance[k] for k in instance if k != "primaryId"}
+        self.assertRaises(Exception,jsonschema.validators.validate,instance=instance_bad, schema=cohort_utils.schema.BAM_COMPLETE_JSON_SCHEMA)
+        instance_2 = {**instance_bad,"cmoId":"s_C_XXXXXX_P001_d"}
+        jsonschema.validators.validate(instance=instance_2, schema=cohort_utils.schema.BAM_COMPLETE_JSON_SCHEMA)
+        instance_3 = {**instance,"cmoId":"s_C_XXXXXX_P001_d"}
+        jsonschema.validators.validate(instance=instance_3, schema=cohort_utils.schema.BAM_COMPLETE_JSON_SCHEMA)
     @run_test
     def test_maf_complete_json(self):
         with open(MAF_COMPLETE,'r') as fh:

@@ -1,0 +1,12 @@
+{
+    "cohortId": "COHORT3",
+    "endUsers": ["anoronh4", "enduser2"], 
+    "pmUsers": ["pmuser1"], 
+    "type": "investigator", 
+    "projectTitle": "Test SMILE metadata function", 
+    "projectSubtitle": "NSCLC samples",
+    "samples": [
+        {"cmoId": "s_C_H5E30A_M005_d05", "normalCmoId": "s_C_H5E30A_N003_d03"}
+    ],
+    "holdBamsAndFastqs": false
+}

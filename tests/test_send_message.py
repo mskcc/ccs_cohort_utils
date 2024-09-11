@@ -45,7 +45,7 @@ class TestSendMessage(unittest.TestCase):
                 'primaryId': ['78787_AB_1','78787_1','95959_8','96785_G_4']
             }
         )
-        newcohort = mycohort.update_ids(metadata_table)
+        newcohort = mycohort.update_with_metadata_table(metadata_table)
         cohort_complete_json = newcohort.cohort_complete_generate(status="PASS",date="2022-10-30 16:05")
         cohort_utils.generate_updates.cohort_complete_event(cohort_complete_json,ignore_error=False)
 
