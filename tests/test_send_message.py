@@ -16,16 +16,28 @@ class TestSendMessage(unittest.TestCase):
     def test_send_bam_update(self):
         inputs = {"id":"13608_B_1","status":"FAIL","date":"2022-10-30 16:05"}
         cohort_utils.generate_updates.bam_complete_event(**inputs,ignore_error=False)
-    
+        inputs = {"id":"C-H5E30A-M005-d05","status":"FAIL","date":"2022-10-30 16:05"}
+        cohort_utils.generate_updates.bam_complete_event(**inputs,ignore_error=False)
+
     @run_test
     def test_send_maf_update(self):
         inputs = {"id":"12346_A_1","normalId":"12346_A_3","status":"PASS","date":"2022-10-30 16:05"}
+        cohort_utils.generate_updates.maf_complete_event(**inputs,ignore_error=False)
+        inputs = {"id":"C-H5E30A-M005-d05","normalId":"C-H5E30A-N003-d03","status":"PASS","date":"2022-10-30 16:05"}
         cohort_utils.generate_updates.maf_complete_event(**inputs,ignore_error=False)
     
     @run_test
     def test_send_qc_update(self):
         inputs = {
             "id":"12346_A_1",
+            "status":"PASS",
+            "result":"pass",
+            "reason":"Tumor Contamination",
+            "date":"2022-10-30 16:05"
+        }
+        cohort_utils.generate_updates.qc_complete_event(**inputs,ignore_error=False)
+        inputs = {
+            "id":"C-H5E30A-M004-d04",
             "status":"PASS",
             "result":"pass",
             "reason":"Tumor Contamination",
@@ -47,6 +59,8 @@ class TestSendMessage(unittest.TestCase):
         )
         newcohort = mycohort.update_with_metadata_table(metadata_table)
         cohort_complete_json = newcohort.cohort_complete_generate(status="PASS",date="2022-10-30 16:05")
+        cohort_utils.generate_updates.cohort_complete_event(cohort_complete_json,ignore_error=False)
+        cohort_complete_json = newcohort.cohort_complete_generate(status="PASS",date="2022-10-30 16:05",use_cmoid=True)
         cohort_utils.generate_updates.cohort_complete_event(cohort_complete_json,ignore_error=False)
 
     @run_test
