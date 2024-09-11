@@ -7,6 +7,7 @@ from utils import run_test
 
 BAM_COMPLETE    = "./data/json/bam-complete.example.json"
 MAF_COMPLETE    = "./data/json/maf-complete.example.json"
+MAF_COMPLETE2   = "./data/json/maf-complete2.example.json"
 QC_COMPLETE     = "./data/json/qc-complete.example.json"
 COHORT_COMPLETE = "./data/json/cohort-complete.example.json"
 COHORT_REQUEST  = "./data/json/COHORT1.cohort.json"
@@ -26,6 +27,9 @@ class validateschema(unittest.TestCase):
     @run_test
     def test_maf_complete_json(self):
         with open(MAF_COMPLETE,'r') as fh:
+            instance = json.load(fh)
+        jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.MAF_COMPLETE_JSON_SCHEMA)
+        with open(MAF_COMPLETE2,'r') as fh:
             instance = json.load(fh)
         jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.MAF_COMPLETE_JSON_SCHEMA)
     @run_test

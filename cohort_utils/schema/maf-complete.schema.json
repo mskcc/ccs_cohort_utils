@@ -23,6 +23,14 @@
             "type": "string",
             "description": "Status of TEMPO workflow completion.",
             "enum": ["PASS","FAIL"]
+        },
+        "cmoId":{
+            "type":"string",
+            "description":"Stable sample identifier of the normal sample"
+        },
+        "normalCmoId":{
+            "type":"string",
+            "description":"Stable sample identifier of the normal sample"
         }
     },
     "required": ["date","status"],
