@@ -17,10 +17,13 @@ class EventHandler:
         self.format = settings.TYPE_SUBJECT_MAPPING[self.type]["format"]
         self.schema = settings.TYPE_SUBJECT_MAPPING[self.type]["schema"]
         self.data = kwargs.pop("data")
-        if settings.TYPE_SUBJECT_MAPPING[self.type].get("id_name",None):
+        self.id_name = kwargs.pop("id_name",None)
+        #if settings.TYPE_SUBJECT_MAPPING[self.type].get("id_name",None):
+        if self.id_name:
             self.headers = {
                 "Nats-Msg-Subject": self.subject,
-                "Nats-Msg-Id": self.data[settings.TYPE_SUBJECT_MAPPING[self.type].get("id_name")]
+                #"Nats-Msg-Id": self.data[settings.TYPE_SUBJECT_MAPPING[self.type].get("id_name")]
+                "Nats-Msg-Id": self.data[self.id_name]
             }
         else:
             self.headers = {

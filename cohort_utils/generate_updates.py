@@ -5,28 +5,42 @@ from cohort_utils import utils
 
 def send_event(func):
     def wrapper_func(*args, **kwargs):
+        event_type = func.__name__.split("_")[0]
+        if kwargs.get("id",None):
+            idType = utils.categorize_id(kwargs.get("id"))
+            if idType == "cmoSampleName":
+                kwargs["id_name"] = "cmoId"
+            else:
+                kwargs["id_name"] = idType
+        elif event_type == "cohort":
+            kwargs["id_name"] = "cohortId"
+        else:
+            pass
         ignore_error = kwargs.pop('ignore_error',True)
         msg_data = func(*args, **kwargs)
-        event_type = func.__name__.split("_")[0]
-        handler_event = EventHandler(type=event_type, data=msg_data)
+        print(msg_data)
+        handler_event = EventHandler(type=event_type, data=msg_data,id_name = kwargs.get("id_name",None))
         loop = asyncio.get_event_loop()
         handler_event.send_message(loop,ignore_error=ignore_error)
     return wrapper_func
 
 @send_event
-def bam_complete_event(id,date,status):
-    return {"primaryId":id,"date":date,"status":status}
+def bam_complete_event(id_name,id,date,status):
+    #return {"primaryId":id,"date":date,"status":status}
+    return {id_name:id,"date":date,"status":status}
 
 @send_event
-def maf_complete_event(id,normalId,date,status):
-    return {"primaryId":id,"normalPrimaryId":normalId,"date":date,"status":status}
+def maf_complete_event(id_name,id,normalId,date,status):
+    #return {"primaryId":id,"normalPrimaryId":normalId,"date":date,"status":status}
+    return {id_name:id,"normal" + id_name[0].upper() + id_name[1:]:normalId,"date":date,"status":status}
 
 @send_event
-def qc_complete_event(id,date,status,result,reason):
-    return {"primaryId":id,"date":date,"status":status,"result":result,"reason":reason}
+def qc_complete_event(id_name,id,date,status,result,reason):
+    #return {"primaryId":id,"date":date,"status":status,"result":result,"reason":reason}
+    return {id_name:id,"date":date,"status":status,"result":result,"reason":reason}
 
 @send_event
-def cohort_complete_event(cohort_json,date=None,status=None):
+def cohort_complete_event(cohort_json,date=None,status=None,**kwargs):
     if date:
         cohort_json["date"] = date
     if status:
