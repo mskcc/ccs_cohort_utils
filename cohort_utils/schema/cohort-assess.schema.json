@@ -1,0 +1,127 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "cohort request obj",
+    "description": "Validate cohort complete NATS message",
+    "type": "object",
+    "properties": {
+        "cohortId": {
+            "type": "string",
+            "description": "Cohort identifier",
+            "pattern":"^CCS_|^MSKWESRP$|^Megatron$"
+        },
+        "type":{
+            "type": "string",
+            "description": "Date of when the MAF analysis completed (YYYY-MM-DD)",
+            "enum":["investigator","MSKWESRP","operational"]
+        },
+        "endUsers":{
+            "type":"array",
+            "description":"Analysts with access to the sample via cohorts",
+            "items": {
+                "type": "string"
+            }
+        },
+        "invalidEndUsers":{
+            "type":"array",
+            "description":"End users that are not found on juno. Subset of endUsers",
+            "items": {
+                "type": "string"
+            }
+        },
+        "pmUsers":{
+            "type":"array",
+            "description":"PMs managing the cohort",
+            "items": {
+                "type": "string"
+            }
+        },
+        "projectTitle":{
+            "type":"string",
+            "description":"Project title"
+        },
+        "projectSubtitle":{
+            "type":"string",
+            "description":"Project subtitle"
+        },
+        "deliverBam": {
+            "type": "boolean",
+            "description":"Whether to deliver bams or not"
+        },
+        "deliverFastq": {
+            "type": "boolean",
+            "description":"Whether to deliver fastqs or not"
+        },
+        "sampleNumber":{
+            "type": "integer",
+            "description":"Number of tumors before deduplication"
+        },
+        "deduplicatedSampleNumber":{
+            "type": "integer",
+            "description":"Number of tumors after deduplication"
+        },
+        "timestamp":{
+            "type": "string",
+            "description": "Timestamp of when the cohort validation took place (YYYY-MM-DD HH:MM)",
+            "pattern": "^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01]) ([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "samples":{
+            "type":"array",
+            "description": "List of paired tumors in the cohort",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "primaryId": {
+                        "type":"string",
+                        "description": "Stable tumor sample identifier",
+                        "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
+
+                    },
+                    "normalPrimaryId": {
+                        "type":"string",
+                        "description": "Stable normal sample identifier",
+                        "pattern": "^\\d{5}(?:_[A-Z]*)?(?:_\\d+){0,6}$"
+                    },
+                    "cmoId": {
+                        "type":"string",
+                        "description": "Stable tumor sample identifier"
+                    },
+                    "normalCmoId": {
+                        "type":"string",
+                        "description": "Stable normal sample identifier"
+                    },
+                    "unpairedStatus": {
+                        "type":"boolean",
+                        "description": "Whether or not the sample is in the unpaired table"
+                    },
+                    "unpairedReason": {
+                        "type":"string"
+                    },
+                    "conflictStatus": {
+                        "type":"boolean",
+                        "description": "Whether or not the sample is in the conflict table"
+                    },
+                    "conflictReason": {
+                        "type":"string"
+                    },
+                    "sampleExists": {
+                        "type":"boolean"
+                    },
+                    "normalSampleMatches": {
+                        "type":"boolean"
+                    }
+                },
+                "required": ["sampleExists"],
+                "anyOf": [
+                    {
+                        "required": ["primaryId"]
+                    },
+                    {
+                        "required": ["cmoId"]
+                    }
+                ]
+            },
+            "uniqueItems": true
+        }
+    },
+    "required":["cohortId","samples","sampleNumber","deduplicatedSampleNumber","endUsers","pmUsers","projectTitle","timestamp"]
+}

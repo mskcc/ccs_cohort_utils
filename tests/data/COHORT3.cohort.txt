@@ -1,0 +1,19 @@
+#endUsers:anoronh4,endUser2
+#pmUsers:pmUser1 
+#projectTitle: Genomic characterization of Responders 
+#projectSubtitle: Project_12345
+#TUMOR_ID	NORMAL_ID
+s_C_A2KCF9_M001_d	s_C_A2KCF9_N001_d
+s_C_60HM0H_M001_d	
+s_C_5KU5MK_T001_d	s_C_5KU5MK_N013_d
+s_C_MMU2K3_P002_d	s_C_MMU2K3_N001_d
+s_C_A3VM2M_T001_d	s_C_A3VM2M_N001_d
+s_C_006015_M009_d
+s_C_006439_P001_d
+s_C_NM6PNX_G004_d
+s_C_006894_G002_d
+s_C_DDD3DD_V002_d
+s_C_DDD3DD_V002_d
+s_C_MMU2K3_P002_d	s_C_MMU2K3_N001_d
+s_C_MMU2K3_P002_d	
+s_C_NM6PNX_G004_d

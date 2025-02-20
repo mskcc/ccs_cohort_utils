@@ -7,6 +7,7 @@ from nats.aio.client import Client as NATS
 import ssl
 import configparser
 import logging
+from . import nats_utils
 
 logger = logging.getLogger(__name__)
 
@@ -69,14 +70,8 @@ async def run(loop, args, ignore_error=True):
     if args["cert"] and args["key"]:
         logger.info("Creating context based on provided cert and key")
         #ssl._create_default_https_context = ssl._create_unverified_context
-        ssl_ctx = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
-        ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ssl_ctx.check_hostname = False
-        ssl_ctx.verify_mode = ssl.CERT_NONE
-        ssl_ctx.load_cert_chain(certfile=args["cert"],keyfile=args["key"])
+        options["tls"] = nats_utils.create_context(args["cert"],args["key"])
         
-        options["tls"] = ssl_ctx
-
     try:
         if args.get("url",None):
             options["servers"] = "nats://{}:{}@{}".format(args["username"],args["password"],args["url"].split("//")[1])

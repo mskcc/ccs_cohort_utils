@@ -101,12 +101,12 @@ class Cohort:
                 i["normalCmoId"] = n_id
         return newcohort
 
-    def update_with_metadata_table(self,metadata_table):
+    def update_with_metadata_table(self,metadata_table,overwrite=False):
         newcohort = copy.deepcopy(self)
         for i in newcohort.cohort["samples"]:
             try:
                 this_sample = Sample(**{k:i[k] for k in ["cmoId","primaryId"] if k in i})
-                this_sample.update_sample_with_metadata(metadata_table)
+                this_sample.update_sample_with_metadata(metadata_table,overwrite=overwrite)
                 #logger.debug(str(this_sample.metadata))
                 for k in this_sample.metadata:
                     i[k] = this_sample.metadata[k]
@@ -114,7 +114,7 @@ class Cohort:
                 print(e)
             try:
                 this_sample = Sample(**{k:i["normal" + k[0].upper() + k[1:]] for k in ["cmoId","primaryId"] if "normal" + k[0].upper() + k[1:] in i})
-                this_sample.update_sample_with_metadata(metadata_table)
+                this_sample.update_sample_with_metadata(metadata_table,overwrite=overwrite)
                 for k in this_sample.metadata:
                     i["normal" + k[0].upper() + k[1:]] = this_sample.metadata[k]
             except Exception as e:
@@ -241,3 +241,6 @@ class Cohort:
         else:
             return filtered_conflicts
 
+    def deduplicate_samples(self,main_id="cmoId"):
+        self.cohort["samples"] = list({v[main_id]:v for v in self.cohort["samples"]}.values())
+        return self

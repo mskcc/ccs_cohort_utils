@@ -13,10 +13,12 @@ class Sample:
         if not isinstance(id,str):
             raise ValueError("Cannot create Sample object without cmoId or primaryId (str)")
 
-    def update_sample_with_metadata(self,metadata_table):
+    def update_sample_with_metadata(self,metadata_table,overwrite=False):
         if not self.metadata.get("primaryId",None) and self.metadata.get("cmoId",None):
             self.metadata["primaryId"] = utils.get_sample_data_from_metadata_table(metadata_table,cmoId=self.metadata["cmoId"])
         elif not self.metadata.get("cmoId",None) and self.metadata.get("primaryId",None):
+            self.metadata["cmoId"] = utils.get_sample_data_from_metadata_table(metadata_table,primaryId=self.metadata["primaryId"])
+        elif overwrite and self.metadata.get("primaryId",None):
             self.metadata["cmoId"] = utils.get_sample_data_from_metadata_table(metadata_table,primaryId=self.metadata["primaryId"])
 
     def update_sample_with_smile(self,overwrite=False,additional_required_fields=[]):

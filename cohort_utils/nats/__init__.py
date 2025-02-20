@@ -1,1 +1,2 @@
 from cohort_utils.nats.handler import EventHandler
+from cohort_utils.nats.subscribe_handler import SubscribeHandler
