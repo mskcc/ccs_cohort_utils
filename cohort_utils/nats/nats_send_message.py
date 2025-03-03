@@ -75,7 +75,7 @@ async def run(loop, args, ignore_error=True):
     try:
         if args.get("url",None):
             options["servers"] = "nats://{}:{}@{}".format(args["username"],args["password"],args["url"].split("//")[1])
-            logger.info(f"Connecting to NATS at {args["url"]} as {args["username"]}")
+            logger.info(f"Connecting to NATS at {args['url']} as {args['username']}")
         await nc.connect(**options)
         logger.info(f"Connected")
     except Exception as e:

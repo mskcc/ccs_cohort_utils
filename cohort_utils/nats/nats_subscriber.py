@@ -33,15 +33,15 @@ async def run(loop, args, seconds=-1):
         logger.info("Creating context based on provided cert and key")
         options["tls"] = nats_utils.create_context(args["cert"],args["key"])
     if args["username"] and args["password"]:
-        logger.info(f"Connecting to NATS at {args["url"]} as {args["username"]}")
+        logger.info(f"Connecting to NATS at {args['url']} as {args['username']}")
         options["servers"] = "nats://{}:{}@{}".format(args["username"],args["password"],args["url"].split("//")[1])
     else:
-        logger.info(f"Connecting to NATS at {args["url"]} without authentication")
+        logger.info(f"Connecting to NATS at {args['url']} without authentication")
         options["servers"] = args["url"]
 
     logger.info(f"Connecting to NATS")
     await nc.connect(**options)
-    logger.info(f"Subscribed to subject: {args["subject"]}")
+    logger.info(f"Subscribed to subject: {args['subject']}")
     await nc.subscribe(args["subject"], cb=message_handler)
 
     logger.info(f"Subscribed to subject: {args['subject']}")
