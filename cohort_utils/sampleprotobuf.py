@@ -12,6 +12,8 @@ class SampleProtobuf_Handler:
         self.cmoSampleId, self.normalCmoSampleId = utils.get_sample_id_from_maf(self.maf_table)
 
     def generate_tempomessage(self):
+        print("Original_SampleProtobuf")
+        sys.exit()
         tempomessage = tempo_pb2.TempoMessage()
         tempomessage.cmoSampleId = self.cmoSampleId
         tempomessage.normalCmoSampleId = self.normalCmoSampleId

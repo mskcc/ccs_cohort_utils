@@ -1,7 +1,7 @@
 from . import settings, nats_subscriber
 #import nats_send_message
 import json, jsonschema
-from cohort_utils.pb import tempo_pb2
+from cohort_utils.pb import tempo_maf_pb2
 import uuid
 
 

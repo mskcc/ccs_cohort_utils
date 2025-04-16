@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package tempo;
+option go_package = "github.mskcc.org/cdsi/cdsi-protobuf/tempo/tempo_types_v1";
+
+message Event {
+  string chromosome = 1;
+  string startPosition = 2;
+  string endPosition = 3;
+  string refAllele = 4;
+  string tumorSeqAllele1 = 5;
+  string tumorSeqAllele2 = 6;
+
+  Neoantigen neoantigen = 7;
+  Facets facets = 8;
+  GetBaseCountsMultiSample getbasecountsmultisample = 9;
+  ZygosityAnnotation zygosityannotation = 10;
+
+  string strand = 11;
+  string ncbiBuild = 12;
+  string hugoSymbol = 13;
+  string entrezGeneId = 14;
+  string variantClassification = 15;
+  string variantType = 16;
+  string dbSNPRS1 = 17;
+  string hgvsp = 18;
+  string hgvsp_short = 19;
+  string hgvsc = 20;
+  string transcriptId = 21;
+  string refSeq = 22;
+  string center = 23;
+  string consequence = 24;
+  string dbSNPValStatus = 25;
+  string matchedNormalSampleBarcode = 26;
+  string matchNormSeqAllele1 = 27;
+  string matchNormSeqAllele2 = 28;
+  string verificationStatus = 29;
+  string validationStatus = 30;
+  string mutationStatus = 31;
+  string sequencingPhase = 32;
+  string sequencingSource = 33;
+  string validationMethod = 34;
+  string score = 35;
+  string bamFile = 36;
+  string sequencer = 37;
+  string tRefCount = 38;
+  string tAltCount = 39;
+  string nRefCount = 40;
+  string nAltCount = 41;
+  string proteinPosition = 42;
+  string codons = 43;
+  string exonNumber = 44;
+  string polyphenPrediction = 45;
+  string polyphenScore = 46;
+  string siftPrediction = 47;
+  string siftScore = 48;
+  string genomicLocationExplanation = 49;
+  string annotationStatus = 50;
+  /* oncokb annotations -
+     these can apply to the mutation at this level
+     or supported data types modeled in an embedded struct 
+  */
+  string oncokbAnnotated = 51;
+  string oncokbKnownGene = 52;
+  string oncokbKnownVariant = 53;
+  string oncokbMutationEffect = 54;
+  string oncokbMutationEffectCitations = 55;
+  string oncokbOncogenic = 56;
+  string oncokbLevel1 = 57;
+  string oncokbLevel2 = 58;
+  string oncokbLevel3A = 59;
+  string oncokbLevel3B = 60;
+  string oncokbLevel4 = 61;
+  string oncokbLevelR1 = 62;
+  string oncokbLevelR2 = 63;
+  string oncokbHighestLevel = 64;
+  string oncokbHighestSensitivityLevel = 65;
+  string oncokbHighestResistanceLevel = 66;
+  string oncokbTxCitations = 67;
+  string oncokbLevelDx1 = 68;
+  string oncokbLevelDx2 = 69;
+  string oncokbLevelDx3 = 70;
+  string oncokbHighestDxLevel = 71;
+  string oncokbDxCitations = 72;
+  string oncokbLevelPx1 = 73;
+  string oncokbLevelPx2 = 74;
+  string oncokbLevelPx3 = 75;
+  string oncokbHighestPxLevel = 76;
+  string oncokbPxCitations = 77;
+
+  message Neoantigen {
+    string neo_maf_identifier_key = 1;
+    string neo_best_icore_peptide = 2;
+    double neo_best_rank = 3;
+    double neo_best_binding_affinity = 4;
+    string neo_best_binder_class = 5;
+    bool neo_best_is_in_wt_peptidome = 6;
+    string neo_best_algorithm = 7;
+    string neo_best_hla_allele = 8;
+    int32 neo_n_peptides_evaluated = 9;
+    int32 neo_n_strong_binders = 10;
+    int32 neo_n_weak_binders = 11;
+  }
+
+  message Facets {
+    int32 tcn = 1;
+    int32 lcn = 2;
+    double cf = 3;
+    double purity = 4;
+    int32 expected_alt_copies = 5;
+    double ccf_expected_copies = 6;
+    double ccf_expected_copies_lower = 7;
+    double ccf_expected_copies_upper = 8;
+    double ccf_expected_copies_prob95 = 9; 
+    double ccf_expected_copies_prob90 = 10;
+    string clonality = 11;
+  }
+
+  message GetBaseCountsMultiSample {
+    int32 t_alt_count_raw = 1;
+    int32 n_alt_count_raw = 2;
+    int32 t_alt_count_raw_fwd = 3;
+    int32 n_alt_count_raw_fwd = 4;
+    int32 t_alt_count_raw_rev = 5;
+    int32 n_alt_count_raw_rev = 6;
+    int32 t_ref_count_raw = 7;
+    int32 n_ref_count_raw = 8;
+    int32 t_ref_count_raw_fwd = 9;
+    int32 n_ref_count_raw_fwd = 10;
+    int32 t_ref_count_raw_rev = 11;
+    int32 n_ref_count_raw_rev = 12;
+    int32 t_depth_raw = 13;
+    int32 n_depth_raw = 14;
+    int32 t_depth_raw_fwd = 15;
+    int32 n_depth_raw_fwd = 16;
+    int32 t_depth_raw_rev = 17;
+    int32 n_depth_raw_rev = 18;
+  }
+
+  message ZygosityAnnotation {
+    int32 num_ref_copies = 1;
+    int32 num_alt_copies = 2;
+    double expected_t_alt_freq_lower = 3;
+    double expected_t_alt_freq_upper = 4;
+    bool tumor_vaf_cn_concordance = 5;
+    string allelic_imbalance = 6;
+    bool loss_of_heterozygosity = 7;
+    string zygosity_flag = 8;
+    // expected_t_alt_freq_lower_99 = 9;
+    // expected_t_alt_freq_upper_99 = 10;
+    // tumor_vaf_cn_concordance_99 = 11;
+  }
+}
+
+message TempoMessage {
+  string cmoSampleId = 1;
+  string normalCmoSampleId = 2;
+  string pipelineVersion = 3;
+  string genomeNexusServerVersion = 4;
+  string genomeNexusDatabaseVersion = 5;
+  string vepVersion = 6;
+  string polyphenVersion = 7;
+  string siftVersion = 8;
+  string oncokbDataVersion = 9;
+  string oncotreeCode = 10;
+  repeated Event events = 11;
+}
+
