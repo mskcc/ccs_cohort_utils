@@ -47,7 +47,7 @@ else:
 
 TYPE_SUBJECT_MAPPING = {
     "bam":{"subject":BAM_COMPLETE_TOPIC,"format":"json","schema":schema.BAM_COMPLETE_JSON_SCHEMA,"id_name":"primaryId"},
-    "maf": {"subject": MAF_COMPLETE_TOPIC, "format": "protobuf", "schema": None, "id_name": "cmoSampleId"},
+    "maf": {"subject": MAF_COMPLETE_TOPIC, "format": "json", "schema": None, "id_name": "cmoSampleId"},
     "qc":{"subject":QC_COMPLETE_TOPIC,"format":"json","schema":schema.QC_COMPLETE_JSON_SCHEMA,"id_name":"primaryId"},
     "cohort":{"subject":COHORT_COMPLETE_TOPIC,"format":"json","schema":schema.COHORT_COMPLETE_JSON_SCHEMA,"id_name":"cohortId"},
     "cbioportal":{"subject":CBIO_SAMPLE_UPDATE_TOPIC,"format":"protobuf","schema":None}

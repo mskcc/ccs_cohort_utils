@@ -3,6 +3,10 @@ import sys
 import os
 import glob
 import asyncio
+import logging
+
+#Uncomment this to see detailed nats messaging info.
+#logging.basicConfig(level=logging.DEBUG)
 
 # Import your handler for converting MAF to a protobuf message.
 from cohort_utils.sampleprotobuf_tempoMaf import SampleProtobuf_Handler
@@ -33,7 +37,7 @@ def main():
     
     # Create the NATS handler for type "maf"
     # (Make sure the id_name matches your protobuf sample id field; here we use "cmoSampleId".)
-    nats_handler = EventHandler(type="maf", data=proto_message, id_name="cmoSampleId")
+    nats_handler = EventHandler(type="cbioportal", data=proto_message, id_name="cmoSampleId")
     
     # Instead of asyncio.get_event_loop(), explicitly create and set a new event loop.
     loop = asyncio.new_event_loop()
