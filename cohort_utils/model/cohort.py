@@ -215,8 +215,8 @@ class Cohort:
         where each tuple contains the tumor and the normal
         ex: [(tumor1,normal1),(tumor2,normal2)]
         """
-        tumors = self.get_sample_list(sampleType="tumors",idType=idType,dedup=False)
-        normals = self.get_sample_list(sampleType="normals",idType=idType,dedup=False)
+        tumors = self.get_sample_list(sampleType="tumor",idType=idType,dedup=False)
+        normals = self.get_sample_list(sampleType="normal",idType=idType,dedup=False)
         return list(zip(tumors, normals))
 
     def generate_voyager_conflicts_table(self,voyager_obj,filter_col=None):
