@@ -5,7 +5,7 @@ jsonschema
 nats-py
 asyncio
 configparser
-protobuf
+protobuf==6.31.1
 google-cloud-translate
 google
 uuid
