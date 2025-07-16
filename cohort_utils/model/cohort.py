@@ -55,8 +55,8 @@ class Cohort:
         crf_string += f"#projectTitle:{self.cohort['projectTitle']}\n"
         if "projectSubtitle" in self.cohort:
             crf_string += f"#projectSubtitle:{self.cohort['projectSubtitle']}\n"
-        crf_string += f"#deliverBam:{self.cohort['deliverBam']}\n"
-        crf_string += f"#deliverFastq:{self.cohort['deliverFastq']}\n"
+        #crf_string += f"#deliverBam:{self.cohort['deliverBam']}\n"
+        #crf_string += f"#deliverFastq:{self.cohort['deliverFastq']}\n"
         crf_string += "#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID\n"
         df = pd.DataFrame(self.cohort["samples"])
         keep_col = "cmoId|normalCmoId|primaryId|normalPrimaryId".split("|")
@@ -76,8 +76,8 @@ class Cohort:
         crf_string += f"#projectTitle:{self.cohort['projectTitle']}\n"
         if "projectSubtitle" in self.cohort:
             crf_string += f"#projectSubtitle:{self.cohort['projectSubtitle']}\n"
-        crf_string += f"#deliverBam:{self.cohort['deliverBam']}\n"
-        crf_string += f"#deliverFastq:{self.cohort['deliverFastq']}\n"
+        #crf_string += f"#deliverBam:{self.cohort['deliverBam']}\n"
+        #crf_string += f"#deliverFastq:{self.cohort['deliverFastq']}\n"
         crf_string += "#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID\tONCOTREECODE\tSAMPLENAME\tINVESTIGATORSAMPLEID\tNORMAL_SAMPLENAME\tNORMAL_INVESTIGATORSAMPLEID\n"
         df = pd.DataFrame(self.cohort["samples"])
         keep_col = "cmoId|normalCmoId|primaryId|normalPrimaryId|oncotreeCode|sampleName|investigatorSampleId|normalSampleName|normalInvestigatorSampleId".split("|")
