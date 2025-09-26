@@ -1,0 +1,13 @@
+{
+    "cohortId": "COHORT1",
+    "endUsers": ["anoronh4", "enduser2"], 
+    "pmUsers": ["pmuser1"], 
+    "type": "investigator", 
+    "projectTitle": "Genomic characterization of Responders", 
+    "projectSubtitle": "Project_12345",
+    "samples": [
+        {"cmoId": "s_C_AAAAAA_P001_d", "normalCmoId": "s_C_AAAAAA_N001_d", "embargoDate":"2028-03-12"},
+        {"cmoId": "s_C_BBBBBB_P001_d", "normalCmoId": "s_C_BBBBBB_N001_d"}
+    ],
+    "holdBamsAndFastqs": false
+}

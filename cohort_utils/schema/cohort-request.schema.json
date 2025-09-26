@@ -67,7 +67,12 @@
                     "normalCmoId": {
                         "type":"string",
                         "description": "Stable normal sample identifier"
-                    }
+                    },
+		    "embargoDate": {
+			"type":"string",
+			"description": "Date on which the embargo expires (YYYY-MM-DD)",
+			"pattern": "^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$"
+		    }
                 },
                 "anyOf": [
                     {

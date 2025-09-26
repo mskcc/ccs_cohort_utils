@@ -3,6 +3,7 @@ import jsonschema
 import unittest
 import cohort_utils
 import sys
+import copy
 from utils import run_test
 
 BAM_COMPLETE    = "./data/json/bam-complete.example.json"
@@ -10,7 +11,8 @@ MAF_COMPLETE    = "./data/json/maf-complete.example.json"
 MAF_COMPLETE2   = "./data/json/maf-complete2.example.json"
 QC_COMPLETE     = "./data/json/qc-complete.example.json"
 COHORT_COMPLETE = "./data/json/cohort-complete.example.json"
-COHORT_REQUEST  = "./data/json/COHORT1.cohort.json"
+COHORT_REQUEST1 = "./data/json/COHORT1.cohort.json"
+COHORT_REQUEST4 = "./data/json/COHORT4.cohort.json"
 
 class validateschema(unittest.TestCase):
     @run_test
@@ -44,9 +46,15 @@ class validateschema(unittest.TestCase):
         jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.COHORT_COMPLETE_JSON_SCHEMA)
     @run_test
     def test_cohort_request_json(self):
-        with open(COHORT_REQUEST,'r') as fh:
+        with open(COHORT_REQUEST1,'r') as fh:
             instance = json.load(fh)
         jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
+        with open(COHORT_REQUEST4,'r') as fh:
+            instance = json.load(fh)
+        jsonschema.validators.validate(instance=instance, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
+        instance_bad = copy.deepcopy(instance)
+        instance_bad["samples"][0]["embargoDate"] = "202-57-2"
+        self.assertRaises(Exception,jsonschema.validators.validate,instance=instance_bad, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
 
 if __name__ == "__main__":
     unittest.main()
