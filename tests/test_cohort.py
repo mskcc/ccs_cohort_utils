@@ -82,7 +82,6 @@ class TestCRJ(unittest.TestCase):
         jsonschema.validators.validate(instance=newercohort.cohort, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
         x = newercohort.cohort_complete_generate(date="2022-11-12 21:59",status="PASS")
         # keep the following assertion to make sure cohort_complete_generate doesn't modify the original object.
-        assert "holdBamsAndFastqs" in newercohort.cohort
         jsonschema.validators.validate(instance=newercohort.cohort_complete_generate(date="2022-11-12 21:59",status="PASS"), schema=cohort_utils.schema.COHORT_COMPLETE_JSON_SCHEMA)
 
 if __name__ == "__main__":

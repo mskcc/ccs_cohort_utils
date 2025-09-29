@@ -43,14 +43,6 @@
             "type":"string",
             "description":"Project subtitle"
         },
-        "deliverBam": {
-            "type": "boolean",
-            "description":"Whether to deliver bams or not"
-        },
-        "deliverFastq": {
-            "type": "boolean",
-            "description":"Whether to deliver fastqs or not"
-        },
         "sampleNumber":{
             "type": "integer",
             "description":"Number of tumors before deduplication"

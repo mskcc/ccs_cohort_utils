@@ -7,6 +7,5 @@
     "projectSubtitle": "NSCLC samples",
     "samples": [
         {"cmoId": "s_C_H5E30A_M005_d05", "normalCmoId": "s_C_H5E30A_N003_d03"}
-    ],
-    "holdBamsAndFastqs": false
+    ]
 }

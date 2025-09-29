@@ -13,7 +13,7 @@ class SampleProtobuf_Handler:
 
     def generate_tempomessage(self):
         print("Original_SampleProtobuf")
-        sys.exit()
+        #sys.exit()
         tempomessage = tempo_pb2.TempoMessage()
         tempomessage.cmoSampleId = self.cmoSampleId
         tempomessage.normalCmoSampleId = self.normalCmoSampleId

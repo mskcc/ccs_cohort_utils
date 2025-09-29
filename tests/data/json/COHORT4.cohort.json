@@ -8,6 +8,5 @@
     "samples": [
         {"cmoId": "s_C_AAAAAA_P001_d", "normalCmoId": "s_C_AAAAAA_N001_d", "embargoDate":"2028-03-12"},
         {"cmoId": "s_C_BBBBBB_P001_d", "normalCmoId": "s_C_BBBBBB_N001_d"}
-    ],
-    "holdBamsAndFastqs": false
+    ]
 }

@@ -38,10 +38,10 @@ class Cohort:
         self.cohort = utils.clean_nones(self.cohort)
         if "type" not in self.cohort:
             self.cohort["type"] = "investigator"
-        if "deliverBam" not in self.cohort:
-            self.cohort["deliverBam"] = True
-        if "deliverFastq" not in self.cohort:
-            self.cohort["deliverFastq"] = False
+        if "status" in self.cohort:
+            del self.cohort["status"]
+        if "date" in self.cohort:
+            del self.cohort["date"]
         self.schema = cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA
         self._validate_schema()
 
