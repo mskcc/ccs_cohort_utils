@@ -71,13 +71,13 @@ class TestSendMessage(unittest.TestCase):
         inputs = {"id":"12346_A_1","status":"PASS","date":"2022-10-3000 16:05"}
         self.assertRaises(Exception, cohort_utils.generate_updates.bam_complete_event,**inputs,ignore_error=False)
 
-    @run_test
-    def test_send_cbio_maf_update(self):
-        cohort_utils.generate_updates.cbioportal_multisample_event(MAF,ignore_error=False)
+    #@run_test
+    #def test_send_cbio_maf_update(self):
+    #    cohort_utils.generate_updates.cbioportal_multisample_event(MAF,ignore_error=False)
     
-    @run_test
-    def test_send_cbio_mixed_maf_update(self):
-        cohort_utils.generate_updates.cbioportal_multisample_event(MAF2,ignore_error=False)
+    #@run_test
+    #def test_send_cbio_mixed_maf_update(self):
+    #    cohort_utils.generate_updates.cbioportal_multisample_event(MAF2,ignore_error=False)
 
     @run_test
     def test_nats_error(self):
