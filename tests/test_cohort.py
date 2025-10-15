@@ -16,12 +16,12 @@ COHORT_REQUEST_JSON3  = "./data/json/COHORT3.cohort.json"
 class TestCRJ(unittest.TestCase):
     @run_test
     def test_crj_obj(self):
-        with open(COHORT_COMPLETE_JSON, 'r') as f:
+        with open(COHORT_REQUEST_JSON, 'r') as f:
             crj_data = json.load(f)
         mycohort = cohort_utils.model.Cohort(crj = crj_data)
-        assert len(mycohort) == 5
-        assert mycohort.cohort["projectSubtitle"] == "A longer description"
-        assert mycohort.cohort["cohortId"] == "CCS_PPPQQQQ"
+        assert len(mycohort) == 2
+        assert mycohort.cohort["projectSubtitle"] == "Project_12345"
+        assert mycohort.cohort["cohortId"] == "COHORT1"
 
     @run_test
     def test_cohort_update_ids(self):
@@ -82,7 +82,7 @@ class TestCRJ(unittest.TestCase):
         jsonschema.validators.validate(instance=newercohort.cohort, schema=cohort_utils.schema.COHORT_REQUEST_JSON_SCHEMA)
         x = newercohort.cohort_complete_generate(date="2022-11-12 21:59",status="PASS")
         # keep the following assertion to make sure cohort_complete_generate doesn't modify the original object.
-        jsonschema.validators.validate(instance=newercohort.cohort_complete_generate(date="2022-11-12 21:59",status="PASS"), schema=cohort_utils.schema.COHORT_COMPLETE_JSON_SCHEMA)
+        jsonschema.validators.validate(instance=newercohort.cohort_complete_generate(date="2022-11-12 21:59",status="PASS",pipelineVersion="v2"), schema=cohort_utils.schema.COHORT_COMPLETE_JSON_SCHEMA)
 
 if __name__ == "__main__":
     unittest.main()

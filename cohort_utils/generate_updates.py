@@ -40,11 +40,14 @@ def qc_complete_event(id_name,id,date,status,result,reason):
     return {id_name:id,"date":date,"status":status,"result":result,"reason":reason}
 
 @send_event
-def cohort_complete_event(cohort_json,date=None,status=None,**kwargs):
+def cohort_complete_event(cohort_json,date=None,status=None,pipelineVersion=None,**kwargs):
     if date:
         cohort_json["date"] = date
     if status:
         cohort_json["status"] = status
+    if pipelineVersion:
+        cohort_json["pipelineVersion"] = pipelineVersion
+
     return cohort_json
 
 def cbioportal_multisample_event(maf,ignore_error=True):

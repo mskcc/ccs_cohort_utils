@@ -59,8 +59,8 @@ class TestSendMessage(unittest.TestCase):
         )
         newcohort = mycohort.update_with_metadata_table(metadata_table)
         cohort_complete_json = newcohort.cohort_complete_generate(status="PASS",date="2022-10-30 16:05")
-        cohort_utils.generate_updates.cohort_complete_event(cohort_complete_json,ignore_error=False)
-        cohort_complete_json = newcohort.cohort_complete_generate(status="PASS",date="2022-10-30 16:05",use_cmoid=True)
+        cohort_utils.generate_updates.cohort_complete_event(cohort_complete_json,ignore_error=False,pipelineVersion="v2")
+        cohort_complete_json = newcohort.cohort_complete_generate(status="PASS",date="2022-10-30 16:05",use_cmoid=True,pipelineVersion="v2")
         cohort_utils.generate_updates.cohort_complete_event(cohort_complete_json,ignore_error=False)
 
     @run_test

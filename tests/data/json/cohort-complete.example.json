@@ -2,6 +2,7 @@
 	"cohortId": "CCS_PPPQQQQ",
 	"date": "2022-11-12 21:59",
 	"type": "investigator",
+	"pipelineVersion": "v2.0.x",
 	"endUsers": ["noronhaa","gongy"],
         "pmUsers": ["raop","skicmopm"],
         "projectTitle":"A title",

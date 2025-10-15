@@ -146,7 +146,7 @@ class Cohort:
             schema = self.schema
         jsonschema.validators.validate(instance=self.cohort, schema=schema)
 
-    def cohort_complete_generate(self,status=None,date=None,use_cmoid=False):
+    def cohort_complete_generate(self,status=None,date=None,pipelineVersion=None,use_cmoid=False):
         mod_cohort = copy.deepcopy(self.cohort)
         if "deliverBam" in mod_cohort:
             del mod_cohort["deliverBam"]
@@ -166,6 +166,8 @@ class Cohort:
             mod_cohort["status"] = status
         if date:
             mod_cohort["date"] = date
+        if pipelineVersion:
+            mod_cohort["pipelineVersion"] = pipelineVersion
         return mod_cohort
 
     def generate_missing_table(self):
