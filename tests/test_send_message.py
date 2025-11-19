@@ -53,7 +53,7 @@ class TestSendMessage(unittest.TestCase):
         assert len(mycohort) == 2
         metadata_table = pd.DataFrame(
             {
-                'cmoSampleName': ["s_C_AAAAAA_P001_d","s_C_BBBBBB_P001_d","s_C_AAAAAA_N001_d","s_C_BBBBBB_N001_d"],
+                'cmoSampleName': ["C-AAAAAA-P001-d","C-BBBBBB-P001-d","C-AAAAAA-N001-d","C-BBBBBB-N001-d"],
                 'primaryId': ['78787_AB_1','78787_1','95959_8','96785_G_4']
             }
         )

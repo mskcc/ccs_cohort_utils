@@ -39,7 +39,7 @@ class Sample:
                     smile_data = utils.get_sample_data_from_smile(cmoId=self.metadata["cmoId"])
                 for i in missing_fields:
                     if i == "cmoId":
-                        self.metadata[i] = utils.nice_cmo_id(smile_data["cmoSampleName"])
+                        self.metadata[i] = smile_data["cmoSampleName"]
                     else:
                         self.metadata[i] = smile_data[i]
         else:
@@ -49,7 +49,7 @@ class Sample:
                 smile_data = utils.get_sample_data_from_smile(cmoId=self.metadata["cmoId"])
             for i in req_fields:
                 if i == "cmoId":
-                    self.metadata[i] = utils.nice_cmo_id(smile_data["cmoSampleName"])
+                    self.metadata[i] = smile_data["cmoSampleName"]
                 elif i == "primaryId" and self.metadata.get("primaryId",None):
                     pass
                 else:

@@ -32,7 +32,7 @@ class TestSample(unittest.TestCase):
         self.assertRaises(KeyError, e_sample.update_sample_with_smile)
         f_sample = cohort_utils.model.Sample(**{"primaryId":"15300_12"})
         f_sample.update_sample_with_smile()
-        assert f_sample.metadata["cmoId"] == "s_C_H5E30A_M005_d05"
+        assert f_sample.metadata["cmoId"] == "C-H5E30A-M005-d05"
 
 
 

@@ -29,6 +29,8 @@ def categorize_id(id):
     return id_type
 
 def normalize_id(id):
+    if id is None:
+        return id
     id_normalize = id.replace("_","-")
     if id_normalize.startswith("s-"):
         id_normalize = id_normalize[2:]

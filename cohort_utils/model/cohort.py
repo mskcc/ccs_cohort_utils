@@ -36,6 +36,9 @@ class Cohort:
                 self.cohort = json.load(f)
         logger.debug('Ingesting cohortId: {}'.format(self.cohort["cohortId"]))
         self.cohort = utils.clean_nones(self.cohort)
+        for i in self.cohort["samples"]:
+            for j in [ k for k in ["cmoId","normalCmoId"] if k in i ]:
+                i[j] = utils.normalize_id(i[j])
         if "type" not in self.cohort:
             self.cohort["type"] = "investigator"
         if "status" in self.cohort:
@@ -101,6 +104,12 @@ class Cohort:
                 i["normalCmoId"] = n_id
         return newcohort
 
+    def get_s_style_cohort(self):
+        newcohort = copy.deepcopy(self)
+        for idx, sample in enumerate(newcohort.cohort["samples"]):
+            newcohort.cohort["samples"][idx] = {k: utils.nice_cmo_id(sample[k]) for k in sample if k in ["cmoId", "normalCmoId"]}
+        return newcohort
+
     def update_with_metadata_table(self,metadata_table,overwrite=False):
         newcohort = copy.deepcopy(self)
         for i in newcohort.cohort["samples"]:
@@ -160,8 +169,7 @@ class Cohort:
             keep_sample_fields = ["primaryId","normalPrimaryId"]
         for idx, i in enumerate(mod_cohort["samples"]):
             mod_cohort["samples"][idx] = {k:i[k] for k in keep_sample_fields if k in i}
-        #mod_cohort["samples"][idx] = { k:utils.normalize_id(i[k]) if k in ["cmoId","normalCmoId"] else (k:i[k]) for k in keep_sample_fields }
-        mod_cohort["samples"][idx] = {k:(utils.normalize_id(i[k]) if k in ["cmoId","normalCmoId"] else i[k]) for k in keep_sample_fields }
+            mod_cohort["samples"][idx] = {k:(utils.normalize_id(i[k]) if k in ["cmoId","normalCmoId"] else i[k]) for k in keep_sample_fields if k in i }
         if status:
             mod_cohort["status"] = status
         if date:
