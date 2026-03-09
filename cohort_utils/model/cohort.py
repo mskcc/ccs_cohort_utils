@@ -51,18 +51,23 @@ class Cohort:
     def __len__(self):
         return len(self.cohort["samples"])
 
-    def to_crf(self):
+    def to_crf(self, keep_primary_ids=True):
         crf_string = ""
         crf_string += f"#endUsers:{','.join(self.cohort['endUsers'])}\n"
         crf_string += f"#pmUsers:{','.join(self.cohort['pmUsers'])}\n"
         crf_string += f"#projectTitle:{self.cohort['projectTitle']}\n"
         if "projectSubtitle" in self.cohort:
             crf_string += f"#projectSubtitle:{self.cohort['projectSubtitle']}\n"
+        crf_string += f"#type:{self.cohort['type']}\n"
         #crf_string += f"#deliverBam:{self.cohort['deliverBam']}\n"
         #crf_string += f"#deliverFastq:{self.cohort['deliverFastq']}\n"
-        crf_string += "#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID\n"
+        if keep_primary_ids:
+            crf_string += "#TUMOR_ID\tNORMAL_ID\tPRIMARY_ID\tNORMAL_PRIMARY_ID\n"
+            keep_col = "cmoId|normalCmoId|primaryId|normalPrimaryId".split("|")
+        else:
+            crf_string += "#TUMOR_ID\tNORMAL_ID\n"
+            keep_col = "cmoId|normalCmoId".split("|")
         df = pd.DataFrame(self.cohort["samples"])
-        keep_col = "cmoId|normalCmoId|primaryId|normalPrimaryId".split("|")
         for i in keep_col:
             if i not in list(df):
                 df[i] = None
