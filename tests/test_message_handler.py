@@ -1,0 +1,103 @@
+import unittest
+import os
+import json
+import tempfile
+from unittest.mock import patch
+os.environ["TEMPO_METADB_PROFILE"] = "local"
+from cohort_utils.nats.message_handler import cohort_request_handler
+from utils import run_test
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+COHORT_JSON = "./data/json/COHORT6.cohort.json"
+
+
+class MockSmileMessage:
+    def __init__(self, subject, data):
+        self.subject = subject
+        self.data = data
+
+
+class TestCohortRequestHandler(unittest.TestCase):
+
+    def setUp(self):
+        with open(COHORT_JSON) as f:
+            self.cohort_data = json.load(f)
+        self.cohort_id = self.cohort_data["cohortId"]
+
+    @run_test
+    def test_valid_cohort_request(self):
+        msg = MockSmileMessage(
+            subject="local.cohort-request",
+            data=json.dumps(self.cohort_data)
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            embargo_path = os.path.join(tmpdir, "embargo_dates.txt")
+            with patch("cohort_utils.nats.message_handler.CRF_OUTPUT_DIR", tmpdir), \
+                 patch("cohort_utils.nats.message_handler.EMBARGO_DATE_RECORD", embargo_path):
+                cohort_request_handler(msg)
+            expected_path = os.path.join(tmpdir, f"{self.cohort_id}.cohort.txt")
+            self.assertTrue(os.path.exists(expected_path))
+            with open(expected_path) as f:
+                content = f.read()
+            print(content)
+            self.assertIn(f"#projectTitle:{self.cohort_data['projectTitle']}", content)
+            self.assertIn(",".join(self.cohort_data["endUsers"]), content)
+
+    @run_test
+    def test_embargo_dates_written(self):
+        msg = MockSmileMessage(
+            subject="local.cohort-request",
+            data=json.dumps(self.cohort_data)
+        )
+        embargoed_samples = [s for s in self.cohort_data["samples"] if s.get("embargoDate")]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            embargo_path = os.path.join(tmpdir, "embargo_dates.txt")
+            with patch("cohort_utils.nats.message_handler.CRF_OUTPUT_DIR", tmpdir), \
+                 patch("cohort_utils.nats.message_handler.EMBARGO_DATE_RECORD", embargo_path):
+                cohort_request_handler(msg)
+            self.assertTrue(os.path.exists(embargo_path))
+            with open(embargo_path) as f:
+                lines = f.read().splitlines()
+            print(lines)
+            self.assertEqual(lines[0], "cmoSampleId\tprimaryId\tembargoDate")
+            self.assertEqual(len(lines), 1 + len(embargoed_samples))
+            for sample in embargoed_samples:
+                self.assertTrue(any(sample["embargoDate"] in line for line in lines))
+
+    @run_test
+    def test_no_embargo_dates_no_file(self):
+        cohort_no_embargo = json.loads(json.dumps(self.cohort_data))
+        for s in cohort_no_embargo["samples"]:
+            s.pop("embargoDate", None)
+        msg = MockSmileMessage(
+            subject="local.cohort-request",
+            data=json.dumps(cohort_no_embargo)
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            embargo_path = os.path.join(tmpdir, "embargo_dates.txt")
+            with patch("cohort_utils.nats.message_handler.CRF_OUTPUT_DIR", tmpdir), \
+                 patch("cohort_utils.nats.message_handler.EMBARGO_DATE_RECORD", embargo_path):
+                cohort_request_handler(msg)
+            self.assertFalse(os.path.exists(embargo_path))
+
+    @run_test
+    def test_invalid_schema_raises(self):
+        invalid_data = {"cohortId": "TEST", "samples": [{"cmoId": "C-AAAAAA-P001-d"}]}
+        msg = MockSmileMessage(
+            subject="local.cohort-request",
+            data=json.dumps(invalid_data)
+        )
+        self.assertRaises(Exception, cohort_request_handler, msg)
+
+    @run_test
+    def test_invalid_json_raises(self):
+        msg = MockSmileMessage(
+            subject="local.cohort-request",
+            data="not valid json"
+        )
+        self.assertRaises(Exception, cohort_request_handler, msg)
+
+
+if __name__ == "__main__":
+    unittest.main()

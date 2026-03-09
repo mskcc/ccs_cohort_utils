@@ -12,6 +12,13 @@ if METADB_PROFILE not in ["dev","prod","local"]:
     
     raise ValueError("invalid NATS_PROFILE value")
 
+if METADB_PROFILE in ["dev", "local"]:
+    CRF_OUTPUT_DIR = "."
+    EMBARGO_DATE_RECORD = "./embargo_dates.txt"
+else:
+    CRF_OUTPUT_DIR = "/data1/core006/ccs_pipelines/tempo/wes_repo/Results/v2.1.x/cohort_level/"
+    EMBARGO_DATE_RECORD = "/data1/core006/ccs_pipelines/tempo/tempodeliver_wes_repo_v2.0.x/stage_runs/deliver_cohorts_v2.1.x/embargo_dates.txt"
+
 if METADB_PROFILE == "dev":
     METADB_NATS_URL = "nats://smile-dev.mskcc.org:4222"
     METADB_NATS_FILTER_SUBJECT = "MDB_STREAM.consumers.*"

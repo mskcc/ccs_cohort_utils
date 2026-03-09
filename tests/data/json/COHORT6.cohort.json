@@ -1,0 +1,15 @@
+{
+    "cohortId": "COHORT6",
+    "endUsers": ["anoronh4", "enduser2"],
+    "pmUsers": ["pmuser1"],
+    "type": "investigator",
+    "projectTitle": "Genomic characterization of Responders",
+    "projectSubtitle": "Project_12345",
+    "samples": [
+        {"cmoId": "C-AAAAAA-P001-d", "normalCmoId": "C-AAAAAA-N001-d", "primaryId": "12345_A_1", "normalPrimaryId": "12345_A_2", "embargoDate": "2025-12-31"},
+        {"cmoId": "C-BBBBBB-P001-d", "normalCmoId": "C-BBBBBB-N001-d", "primaryId": "12345_B_1", "normalPrimaryId": "12345_B_2", "embargoDate": "2026-06-30"},
+        {"cmoId": "C-CCCCCC-P001-d", "normalCmoId": "C-CCCCCC-N001-d", "primaryId": "12345_C_1", "normalPrimaryId": "12345_C_2"},
+	{"cmoId": "C-DDDDDD-P001-d", "embargoDate": "2026-06-30"},
+	{"cmoId": "C-EEEEEE-T001-d"}
+    ]
+}
