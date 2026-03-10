@@ -29,6 +29,9 @@ if METADB_PROFILE == "dev":
     CBIO_SAMPLE_UPDATE_TOPIC = "CBIO_STREAM.cbio.tempo.sample-genomics"
     METADB_CLIENT_TIMEOUT = 3600.0
     #METADB_NATS_NEW_REQUEST = BAM_COMPLETE_TOPIC
+    NEW_COHORT_SUBMIT_TOPIC = "MDB_STREAM.consumers.tempo.new-cohort-submit"
+    COHORT_UPDATE_TOPIC = "MDB_STREAM.consumers.tempo.cohort-update"
+
 elif METADB_PROFILE == "local":
     METADB_NATS_URL = "nats://127.0.0.1:4222"
     METADB_CLIENT_TIMEOUT = 3600.0
@@ -41,6 +44,9 @@ elif METADB_PROFILE == "local":
     MAF_COMPLETE_TOPIC = None
     COHORT_COMPLETE_TOPIC = None
     CBIO_SAMPLE_UPDATE_TOPIC = None
+    NEW_COHORT_SUBMIT_TOPIC = "MDB_STREAM.consumers.tempo.new-cohort-submit"
+    COHORT_UPDATE_TOPIC = None
+
 else:
     METADB_NATS_URL = "nats://smile.mskcc.org:4222"
     METADB_NATS_FILTER_SUBJECT = "MDB_STREAM.consumers.*"
@@ -50,6 +56,9 @@ else:
     COHORT_COMPLETE_TOPIC = "MDB_STREAM.server.tempo.wes.cohort-complete"
     CBIO_SAMPLE_UPDATE_TOPIC = "CBIO_STREAM.cbio.tempo.sample-genomics"
     METADB_CLIENT_TIMEOUT = 3600.0
+    NEW_COHORT_SUBMIT_TOPIC = "MDB_STREAM.consumers.tempo.new-cohort-submit"
+    COHORT_UPDATE_TOPIC = "MDB_STREAM.consumers.tempo.cohort-update"
+
 
 
 TYPE_SUBJECT_MAPPING = {
@@ -57,5 +66,7 @@ TYPE_SUBJECT_MAPPING = {
     "maf": {"subject": MAF_COMPLETE_TOPIC, "format": "json", "schema": None, "id_name": "cmoSampleId"},
     "qc":{"subject":QC_COMPLETE_TOPIC,"format":"json","schema":schema.QC_COMPLETE_JSON_SCHEMA,"id_name":"primaryId"},
     "cohort":{"subject":COHORT_COMPLETE_TOPIC,"format":"json","schema":schema.COHORT_COMPLETE_JSON_SCHEMA,"id_name":"cohortId"},
-    "cbioportal":{"subject":CBIO_SAMPLE_UPDATE_TOPIC,"format":"protobuf","schema":None}
+    "cbioportal":{"subject":CBIO_SAMPLE_UPDATE_TOPIC,"format":"protobuf","schema":None},
+    "cohortRequest":{"subject":NEW_COHORT_SUBMIT_TOPIC,"format":"json","schema":schema.COHORT_REQUEST_JSON_SCHEMA,"id_name":"cohortId"},
+    "cohortUpdate":{"subject":COHORT_UPDATE_TOPIC,"format":"json","schema":schema.COHORT_REQUEST_JSON_SCHEMA,"id_name":"cohortId"}
 }
