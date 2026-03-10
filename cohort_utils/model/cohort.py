@@ -27,6 +27,16 @@ crf_cohort_sample_attr_map = {
 
 class Cohort:
     def __init__(self,**kwargs):
+        """
+        Initialize a Cohort from a cohort request JSON dict or file. Normalizes
+        cmoId/normalCmoId values, strips None values, sets default type to
+        "investigator", removes status/date fields, and validates against the
+        cohort-request JSON schema.
+
+        Kwargs:
+            crj (dict): Cohort request JSON as a dict.
+            crj_file (str): Path to a cohort request JSON file.
+        """
         crj = kwargs.pop("crj",None)
         crj_file = kwargs.pop("crj_file",None)
         if crj:
@@ -49,9 +59,24 @@ class Cohort:
         self._validate_schema()
 
     def __len__(self):
+        """Return the number of samples in the cohort."""
         return len(self.cohort["samples"])
 
     def to_crf(self, keep_primary_ids=True):
+        """
+        Serialize the cohort to CRF (Cohort Request File) format.
+
+        Produces a string with # metadata header lines followed by a
+        tab-delimited sample table. When keep_primary_ids=True, the table
+        includes primaryId and normalPrimaryId columns in addition to
+        cmoId and normalCmoId.
+
+        Args:
+            keep_primary_ids (bool): Include primaryId/normalPrimaryId columns. Default True.
+
+        Returns:
+            str: CRF-formatted string.
+        """
         crf_string = ""
         crf_string += f"#endUsers:{','.join(self.cohort['endUsers'])}\n"
         crf_string += f"#pmUsers:{','.join(self.cohort['pmUsers'])}\n"
@@ -78,6 +103,14 @@ class Cohort:
         return crf_string
     
     def to_crf_extend(self):
+        """
+        Serialize the cohort to extended CRF format, including additional
+        sample-level fields: oncotreeCode, sampleName, investigatorSampleId,
+        normalSampleName, and normalInvestigatorSampleId.
+
+        Returns:
+            str: Extended CRF-formatted string.
+        """
         crf_string = ""
         crf_string += f"#endUsers:{','.join(self.cohort['endUsers'])}\n"
         crf_string += f"#pmUsers:{','.join(self.cohort['pmUsers'])}\n"
@@ -99,6 +132,18 @@ class Cohort:
         return crf_string
 
     def fillin_normals(self,pairing):
+        """
+        Fill in missing normalCmoId values using a pairing object.
+
+        For each sample, looks up the matched normal via pairing.search_tumor
+        and sets normalCmoId if it is currently empty or null.
+
+        Args:
+            pairing: A pairing object with a search_tumor(cmoId) method.
+
+        Returns:
+            Cohort: A new Cohort with normalCmoId values filled in.
+        """
         newcohort = copy.deepcopy(self)
         for i in newcohort.cohort["samples"]:
             [t_id,n_id] = pairing.search_tumor(i["cmoId"])
@@ -110,12 +155,33 @@ class Cohort:
         return newcohort
 
     def get_s_style_cohort(self):
+        """
+        Return a copy of the cohort with cmoId/normalCmoId converted to
+        s_-prefixed underscore style (e.g. "C-AAAAAA-P001-d" -> "s_C_AAAAAA_P001_d").
+
+        Returns:
+            Cohort: A new Cohort with s-style sample IDs.
+        """
         newcohort = copy.deepcopy(self)
         for idx, sample in enumerate(newcohort.cohort["samples"]):
             newcohort.cohort["samples"][idx] = {k: utils.nice_cmo_id(sample[k]) for k in sample if k in ["cmoId", "normalCmoId"]}
         return newcohort
 
     def update_with_metadata_table(self,metadata_table,overwrite=False):
+        """
+        Enrich sample metadata using a local metadata table.
+
+        For each tumor and normal sample, fills in missing cmoId/primaryId
+        fields (or overwrites them if overwrite=True) by looking them up in
+        the provided metadata table.
+
+        Args:
+            metadata_table (pd.DataFrame): Table with cmoSampleName and primaryId columns.
+            overwrite (bool): If True, overwrite existing cmoId/primaryId values. Default False.
+
+        Returns:
+            Cohort: A new Cohort with updated sample metadata.
+        """
         newcohort = copy.deepcopy(self)
         for i in newcohort.cohort["samples"]:
             try:
@@ -136,6 +202,21 @@ class Cohort:
         return newcohort
     
     def update_with_smile(self,overwrite=False,additional_required_fields=["oncotreeCode"]):
+        """
+        Enrich sample metadata by querying the SMILE REST API.
+
+        For each tumor and normal sample, fills in missing required fields
+        (or overwrites them if overwrite=True) by fetching data from SMILE.
+        oncotreeCode is never copied to normal samples.
+
+        Args:
+            overwrite (bool): If True, overwrite existing field values. Default False.
+            additional_required_fields (list): Extra fields to fetch beyond cmoId/primaryId.
+                Default ["oncotreeCode"].
+
+        Returns:
+            Cohort: A new Cohort with updated sample metadata.
+        """
         newcohort = copy.deepcopy(self)
         for i in newcohort.cohort["samples"]:
             try:
@@ -156,11 +237,36 @@ class Cohort:
         return newcohort
 
     def _validate_schema(self,schema=None):
+        """
+        Validate self.cohort against a JSON schema.
+
+        Args:
+            schema (dict): JSON schema to validate against. Defaults to
+                COHORT_REQUEST_JSON_SCHEMA if not provided.
+
+        Raises:
+            jsonschema.ValidationError: If the cohort data does not conform to the schema.
+        """
         if not schema:
             schema = self.schema
         jsonschema.validators.validate(instance=self.cohort, schema=schema)
 
     def cohort_complete_generate(self,status=None,date=None,pipelineVersion=None,use_cmoid=False):
+        """
+        Generate a cohort-complete JSON dict from the current cohort.
+
+        Strips delivery-related fields and reduces each sample to only its
+        ID fields (primaryId/normalPrimaryId or cmoId/normalCmoId).
+
+        Args:
+            status (str): Pipeline status to include (e.g. "PASS"). Optional.
+            date (str): Completion date to include (e.g. "2022-10-30 16:05"). Optional.
+            pipelineVersion (str): Pipeline version string to include. Optional.
+            use_cmoid (bool): If True, use cmoId/normalCmoId instead of primaryId/normalPrimaryId. Default False.
+
+        Returns:
+            dict: Cohort-complete JSON dict.
+        """
         mod_cohort = copy.deepcopy(self.cohort)
         if "deliverBam" in mod_cohort:
             del mod_cohort["deliverBam"]
@@ -257,5 +363,15 @@ class Cohort:
             return filtered_conflicts
 
     def deduplicate_samples(self,main_id="cmoId"):
+        """
+        Remove duplicate samples in-place, keeping the last occurrence of each
+        unique value of main_id.
+
+        Args:
+            main_id (str): Sample field to deduplicate on. Default "cmoId".
+
+        Returns:
+            Cohort: self, with duplicates removed.
+        """
         self.cohort["samples"] = list({v[main_id]:v for v in self.cohort["samples"]}.values())
         return self
