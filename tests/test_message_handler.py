@@ -28,7 +28,7 @@ class TestCohortRequestHandler(unittest.TestCase):
     @run_test
     def test_valid_cohort_request(self):
         msg = MockSmileMessage(
-            subject="local.cohort-request",
+            subject="local.new-cohort-submit",
             data=json.dumps(self.cohort_data)
         )
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -47,7 +47,7 @@ class TestCohortRequestHandler(unittest.TestCase):
     @run_test
     def test_embargo_dates_written(self):
         msg = MockSmileMessage(
-            subject="local.cohort-request",
+            subject="local.new-cohort-submit",
             data=json.dumps(self.cohort_data)
         )
         embargoed_samples = [s for s in self.cohort_data["samples"] if s.get("embargoDate")]
@@ -71,7 +71,7 @@ class TestCohortRequestHandler(unittest.TestCase):
         for s in cohort_no_embargo["samples"]:
             s.pop("embargoDate", None)
         msg = MockSmileMessage(
-            subject="local.cohort-request",
+            subject="local.new-cohort-submit",
             data=json.dumps(cohort_no_embargo)
         )
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -82,10 +82,63 @@ class TestCohortRequestHandler(unittest.TestCase):
             self.assertFalse(os.path.exists(embargo_path))
 
     @run_test
+    def test_cohort_update_updates_metadata(self):
+        updated_cohort = json.loads(json.dumps(self.cohort_data))
+        updated_cohort["projectTitle"] = "Updated Title"
+        updated_cohort["endUsers"] = ["newuser1", "newuser2"]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            embargo_path = os.path.join(tmpdir, "embargo_dates.txt")
+            output_path = os.path.join(tmpdir, f"{self.cohort_id}.cohort.txt")
+            # First write the original file
+            submit_msg = MockSmileMessage(
+                subject="local.new-cohort-submit",
+                data=json.dumps(self.cohort_data)
+            )
+            with patch("cohort_utils.nats.message_handler.CRF_OUTPUT_DIR", tmpdir), \
+                 patch("cohort_utils.nats.message_handler.EMBARGO_DATE_RECORD", embargo_path):
+                cohort_request_handler(submit_msg)
+            with open(output_path) as f:
+                original_lines = f.read().splitlines()
+            original_data_lines = [l for l in original_lines if not l.startswith("#")]
+            # Now send cohort-update with changed metadata
+            update_msg = MockSmileMessage(
+                subject="local.cohort-update",
+                data=json.dumps(updated_cohort)
+            )
+            with patch("cohort_utils.nats.message_handler.CRF_OUTPUT_DIR", tmpdir), \
+                 patch("cohort_utils.nats.message_handler.EMBARGO_DATE_RECORD", embargo_path):
+                cohort_request_handler(update_msg)
+            with open(output_path) as f:
+                updated_lines = f.read().splitlines()
+            updated_data_lines = [l for l in updated_lines if not l.startswith("#")]
+            # Metadata should be updated
+            self.assertTrue(any("Updated Title" in l for l in updated_lines))
+            self.assertTrue(any("newuser1" in l for l in updated_lines))
+            # Data lines should be unchanged
+            self.assertEqual(original_data_lines, updated_data_lines)
+
+    @run_test
+    def test_cohort_update_no_existing_file(self):
+        msg = MockSmileMessage(
+            subject="local.cohort-update",
+            data=json.dumps(self.cohort_data)
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            embargo_path = os.path.join(tmpdir, "embargo_dates.txt")
+            output_path = os.path.join(tmpdir, f"{self.cohort_id}.cohort.txt")
+            with patch("cohort_utils.nats.message_handler.CRF_OUTPUT_DIR", tmpdir), \
+                 patch("cohort_utils.nats.message_handler.EMBARGO_DATE_RECORD", embargo_path):
+                cohort_request_handler(msg)
+            self.assertTrue(os.path.exists(output_path))
+            with open(output_path) as f:
+                content = f.read()
+            self.assertIn(f"#projectTitle:{self.cohort_data['projectTitle']}", content)
+
+    @run_test
     def test_invalid_schema_raises(self):
         invalid_data = {"cohortId": "TEST", "samples": [{"cmoId": "C-AAAAAA-P001-d"}]}
         msg = MockSmileMessage(
-            subject="local.cohort-request",
+            subject="local.new-cohort-submit",
             data=json.dumps(invalid_data)
         )
         self.assertRaises(Exception, cohort_request_handler, msg)
@@ -93,7 +146,7 @@ class TestCohortRequestHandler(unittest.TestCase):
     @run_test
     def test_invalid_json_raises(self):
         msg = MockSmileMessage(
-            subject="local.cohort-request",
+            subject="local.new-cohort-submit",
             data="not valid json"
         )
         self.assertRaises(Exception, cohort_request_handler, msg)

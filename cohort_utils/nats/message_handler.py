@@ -22,15 +22,24 @@ def cohort_request_handler(msg: SmileMessage):
         msg (SmileMessage): Message object containing subject and data
     """
     try:
-        data = json.loads(msg.data)
+        data = msg.data if isinstance(msg.data, dict) else json.loads(msg.data)
         jsonschema.validate(instance=data, schema=COHORT_REQUEST_JSON_SCHEMA)
         cohort = Cohort(crj=data)
         crf_content = cohort.to_crf(keep_primary_ids=False)
         cohort_id = cohort.cohort["cohortId"]
         output_path = os.path.join(CRF_OUTPUT_DIR, f"{cohort_id}.cohort.txt")
+        is_update = msg.subject.endswith("cohort-update") and os.path.exists(output_path)
+        if is_update:
+            with open(output_path, "r") as f:
+                existing_lines = f.read().splitlines(keepends=True)
+            new_header_lines = [l for l in crf_content.splitlines(keepends=True) if l.startswith("#")]
+            existing_data_lines = [l for l in existing_lines if not l.startswith("#")]
+            final_content = "".join(new_header_lines + existing_data_lines)
+        else:
+            final_content = crf_content
         with open(output_path, "w") as f:
-            f.write(crf_content)
-        logger.info(f"Wrote CRF for cohort {cohort_id} to {output_path}")
+            f.write(final_content)
+        logger.info(f"{'Updated metadata in' if is_update else 'Wrote'} CRF for cohort {cohort_id} to {output_path}")
         embargoed = [s for s in cohort.cohort["samples"] if s.get("embargoDate")]
         if embargoed:
             write_header = not os.path.exists(EMBARGO_DATE_RECORD)
