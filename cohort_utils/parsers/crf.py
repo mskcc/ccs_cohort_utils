@@ -44,7 +44,9 @@ class CRF_Handler:
         )
         crf_table = crf_table.replace({np.nan: None})
         crf_table["cmoId"] = crf_table["cmoId"].apply(generic_utils.normalize_id)
+        crf_table = crf_table.replace({np.nan: None})
         crf_table["normalCmoId"] = crf_table["normalCmoId"].apply(generic_utils.normalize_id)
+        crf_table = crf_table.replace({np.nan: None})
         samples = crf_table.to_dict('records')
         return samples
 
