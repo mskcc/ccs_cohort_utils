@@ -1,0 +1,31 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install git+https://github.com/anoronh4/smile-client@main
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Run tests
+        working-directory: tests
+        env:
+          TEMPO_METADB_PROFILE: local
+        run: |
+          python -m pytest test_crf.py test_message_handler.py validate_schema.py -v
