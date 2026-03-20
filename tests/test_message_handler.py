@@ -5,6 +5,7 @@ import tempfile
 from unittest.mock import patch
 os.environ["TEMPO_METADB_PROFILE"] = "local"
 from cohort_utils.nats.message_handler import cohort_request_handler
+from cohort_utils.pb import smile_pb2
 from utils import run_test
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -100,10 +101,17 @@ class TestCohortRequestHandler(unittest.TestCase):
             with open(output_path) as f:
                 original_lines = f.read().splitlines()
             original_data_lines = [l for l in original_lines if not l.startswith("#")]
-            # Now send cohort-update with changed metadata
+            # Now send cohort-update with changed metadata as protobuf
+            pb_msg = smile_pb2.TempoCohortUpdate()
+            pb_msg.cohortId = updated_cohort["cohortId"]
+            pb_msg.type = updated_cohort.get("type", "")
+            pb_msg.endUsers.extend(["newuser1", "newuser2"])
+            pb_msg.pmUsers.extend(updated_cohort["pmUsers"])
+            pb_msg.projectTitle = "Updated Title"
+            pb_msg.projectSubtitle = updated_cohort.get("projectSubtitle", "")
             update_msg = MockSmileMessage(
                 subject="local.cohort-update",
-                data=json.dumps(updated_cohort)
+                data=pb_msg.SerializeToString()
             )
             with patch("cohort_utils.nats.message_handler.CRF_OUTPUT_DIR", tmpdir), \
                  patch("cohort_utils.nats.message_handler.EMBARGO_DATE_RECORD", embargo_path):
@@ -119,9 +127,16 @@ class TestCohortRequestHandler(unittest.TestCase):
 
     @run_test
     def test_cohort_update_no_existing_file(self):
+        pb_msg = smile_pb2.TempoCohortUpdate()
+        pb_msg.cohortId = self.cohort_data["cohortId"]
+        pb_msg.type = self.cohort_data.get("type", "")
+        pb_msg.endUsers.extend(self.cohort_data["endUsers"])
+        pb_msg.pmUsers.extend(self.cohort_data["pmUsers"])
+        pb_msg.projectTitle = self.cohort_data["projectTitle"]
+        pb_msg.projectSubtitle = self.cohort_data.get("projectSubtitle", "")
         msg = MockSmileMessage(
             subject="local.cohort-update",
-            data=json.dumps(self.cohort_data)
+            data=pb_msg.SerializeToString()
         )
         with tempfile.TemporaryDirectory() as tmpdir:
             embargo_path = os.path.join(tmpdir, "embargo_dates.txt")

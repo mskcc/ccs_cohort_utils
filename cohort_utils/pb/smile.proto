@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package smile;
+
+option java_package = "org.mskcc.smile.commons.generated";
+option go_package = "github.mskcc.org/cdsi/cdsi-protobuf/smile/smile_types_v1";
+
+message TempoSampleUpdateMessage {
+  repeated TempoSample tempoSamples = 1;
+}
+
+message TempoSample {
+  string primaryId = 1;
+  string cmoSampleName = 2;
+  string dmpSampleId = 3;
+  string accessLevel = 4;
+  string custodianInformation = 5;
+  string baitSet = 6;
+  string genePanel = 7;
+  string oncotreeCode = 8;
+  string cmoPatientId = 9;
+  string dmpPatientId = 10;
+  string recapture = 11;
+}
+
+message TempoCohortUpdate {
+  string cohortId = 1;
+  string date = 2;
+  string type = 3;
+  repeated string endUsers = 4;
+  repeated string pmUsers = 5;
+  string projectTitle = 6;
+  string projectSubtitle = 7;
+  string status = 8;
+}

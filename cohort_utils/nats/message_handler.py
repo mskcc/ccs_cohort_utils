@@ -2,6 +2,8 @@ from smile_client.messages.smile_message import SmileMessage
 from cohort_utils.model.cohort import Cohort
 from cohort_utils.schema import COHORT_REQUEST_JSON_SCHEMA
 from cohort_utils.nats.settings import CRF_OUTPUT_DIR, EMBARGO_DATE_RECORD
+from cohort_utils.pb import smile_pb2
+from google.protobuf.json_format import MessageToDict
 import jsonschema
 import logging
 import json
@@ -22,7 +24,15 @@ def cohort_request_handler(msg: SmileMessage):
         msg (SmileMessage): Message object containing subject and data
     """
     try:
-        data = msg.data if isinstance(msg.data, dict) else json.loads(msg.data)
+        if msg.subject.endswith("cohort-update") and isinstance(msg.data, bytes):
+            pb_msg = smile_pb2.TempoCohortUpdate()
+            pb_msg.ParseFromString(msg.data)
+            data = MessageToDict(pb_msg, preserving_proto_field_name=True)
+            data.setdefault("samples", [{"cmoId": "PLACEHOLDER"}])
+            if "date" in data:
+                del data["date"]
+        else:
+            data = msg.data if isinstance(msg.data, dict) else json.loads(msg.data)
         jsonschema.validate(instance=data, schema=COHORT_REQUEST_JSON_SCHEMA)
         cohort = Cohort(crj=data)
         crf_content = cohort.to_crf(keep_primary_ids=False)
