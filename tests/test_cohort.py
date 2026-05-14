@@ -128,6 +128,30 @@ class TestCRJ(unittest.TestCase):
         assert row_c["voyager_normal_primaryId"] == "12345_6"
 
     @run_test
+    def test_get_samples_not_in_voyager_tracker(self):
+        crj_data = {
+            "cohortId": "COHORT_TRACKER_MISSING_TEST",
+            "endUsers": ["testuser"],
+            "pmUsers": ["pmuser"],
+            "type": "investigator",
+            "projectTitle": "Test samples missing from voyager tracker",
+            "samples": [
+                # both in tracker: should not appear in result
+                {"cmoId": "C-AAAAAA-P001-d", "normalCmoId": "C-AAAAAA-N001-d"},
+                # tumor and normal both absent from tracker
+                {"cmoId": "C-DDDDDD-P001-d", "normalCmoId": "C-ZZZZZZ-N001-d"},
+            ]
+        }
+        mycohort = cohort_utils.model.Cohort(crj=crj_data)
+        voyager = cohort_utils.model.VoyagerTempoMPGen(folderPath=VOYAGER3)
+        result = mycohort.get_samples_not_in_voyager_tracker(voyager)
+
+        assert len(result) == 2
+        assert set(result["cmoId"]) == {"C-DDDDDD-P001-d", "C-ZZZZZZ-N001-d"}
+        assert result[result["cmoId"] == "C-DDDDDD-P001-d"].iloc[0]["sampleType"] == "tumor"
+        assert result[result["cmoId"] == "C-ZZZZZZ-N001-d"].iloc[0]["sampleType"] == "normal"
+
+    @run_test
     def test_s_style_cohort(self):
         with open(COHORT_REQUEST_JSON5, 'r') as f:
             crj_data = json.load(f)

@@ -399,6 +399,27 @@ class Cohort:
             columns={"normalCmoId": "cohort_normal", "NORMAL_ID": "voyager_normal"}
         ).reset_index(drop=True)
 
+    def get_samples_not_in_voyager_tracker(self, voyager_obj):
+        """
+        Identify cohort samples (tumors and normals) that do not appear in
+        the voyager tracker at all.
+
+        Args:
+            voyager_obj: A VoyagerTempoMPGen object.
+
+        Returns:
+            pd.DataFrame: Columns: cmoId, sampleType ("tumor" or "normal"),
+                one row per sample absent from the tracker.
+        """
+        tracker_ids = set(voyager_obj.tracker["CMO_Sample_ID"])
+        tumor_ids = self.get_sample_list(sampleType="tumor", idType="cmo", dedup=True)
+        normal_ids = list({s["normalCmoId"] for s in self.cohort["samples"] if s.get("normalCmoId")})
+        rows = (
+            [{"cmoId": t, "sampleType": "tumor"} for t in tumor_ids if t not in tracker_ids] +
+            [{"cmoId": n, "sampleType": "normal"} for n in normal_ids if n not in tracker_ids]
+        )
+        return pd.DataFrame(rows, columns=["cmoId", "sampleType"])
+
     def deduplicate_samples(self,main_id="cmoId"):
         """
         Remove duplicate samples in-place, keeping the last occurrence of each
