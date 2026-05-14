@@ -362,6 +362,43 @@ class Cohort:
         else:
             return filtered_conflicts
 
+    def get_voyager_normal_conflicts(self, voyager_obj):
+        """
+        Identify cohort tumors that are present in the voyager pairing table
+        but are paired to a different normal than voyager specifies.
+
+        Primary IDs are included for the tumor and voyager normal (always).
+        The cohort normal primary ID is included only when that normal appears
+        in the voyager tracker; otherwise it is NaN.
+
+        Args:
+            voyager_obj: A VoyagerTempoMPGen object.
+
+        Returns:
+            pd.DataFrame: Columns: cmoId, tumor_primaryId, cohort_normal,
+                cohort_normal_primaryId, voyager_normal, voyager_normal_primaryId.
+        """
+        cohort_pairs = pd.DataFrame(
+            [(s.get("cmoId"), s.get("normalCmoId")) for s in self.cohort["samples"]],
+            columns=["cmoId", "normalCmoId"]
+        )
+        merged = cohort_pairs.merge(
+            voyager_obj.pairing[["TUMOR_ID", "NORMAL_ID"]],
+            left_on="cmoId",
+            right_on="TUMOR_ID",
+            how="inner"
+        )
+        conflicts = merged[merged["normalCmoId"] != merged["NORMAL_ID"]].copy()
+
+        tracker_primary = voyager_obj.tracker[["CMO_Sample_ID", "primaryId"]].set_index("CMO_Sample_ID")["primaryId"]
+        conflicts["tumor_primaryId"] = conflicts["cmoId"].map(tracker_primary)
+        conflicts["voyager_normal_primaryId"] = conflicts["NORMAL_ID"].map(tracker_primary)
+        conflicts["cohort_normal_primaryId"] = conflicts["normalCmoId"].map(tracker_primary)
+
+        return conflicts[["cmoId", "tumor_primaryId", "normalCmoId", "cohort_normal_primaryId", "NORMAL_ID", "voyager_normal_primaryId"]].rename(
+            columns={"normalCmoId": "cohort_normal", "NORMAL_ID": "voyager_normal"}
+        ).reset_index(drop=True)
+
     def deduplicate_samples(self,main_id="cmoId"):
         """
         Remove duplicate samples in-place, keeping the last occurrence of each

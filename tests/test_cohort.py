@@ -13,6 +13,7 @@ COHORT_REQUEST_JSON   = "./data/json/COHORT1.cohort.json"
 COHORT_REQUEST_JSON2  = "./data/json/COHORT2.cohort.json"
 COHORT_REQUEST_JSON3  = "./data/json/COHORT3.cohort.json"
 COHORT_REQUEST_JSON5  = "./data/json/COHORT5.cohort.json"
+VOYAGER3              = "./data/voyager3/"
 
 class TestCRJ(unittest.TestCase):
     @run_test
@@ -85,6 +86,46 @@ class TestCRJ(unittest.TestCase):
         x = newercohort.cohort_complete_generate(date="2022-11-12 21:59",status="PASS")
         # keep the following assertion to make sure cohort_complete_generate doesn't modify the original object.
         jsonschema.validators.validate(instance=newercohort.cohort_complete_generate(date="2022-11-12 21:59",status="PASS",pipelineVersion="v2"), schema=cohort_utils.schema.COHORT_COMPLETE_JSON_SCHEMA)
+
+    @run_test
+    def test_get_voyager_normal_conflicts(self):
+        crj_data = {
+            "cohortId": "COHORT_VOYAGER_CONFLICT_TEST",
+            "endUsers": ["testuser"],
+            "pmUsers": ["pmuser"],
+            "type": "investigator",
+            "projectTitle": "Test voyager normal conflicts",
+            "samples": [
+                # conflict: voyager says C-AAAAAA-N001-d; cohort normal IS in tracker
+                {"cmoId": "C-AAAAAA-P001-d", "normalCmoId": "C-BBBBBB-N001-d"},
+                # no conflict: voyager and cohort both say C-BBBBBB-N001-d
+                {"cmoId": "C-BBBBBB-P001-d", "normalCmoId": "C-BBBBBB-N001-d"},
+                # conflict: voyager says C-CCCCCC-N001-d; cohort normal NOT in tracker
+                {"cmoId": "C-CCCCCC-P001-d", "normalCmoId": "C-ZZZZZZ-N001-d"},
+                # not in voyager pairing at all: should not appear in result
+                {"cmoId": "C-DDDDDD-P001-d", "normalCmoId": "C-DDDDDD-N001-d"},
+            ]
+        }
+        mycohort = cohort_utils.model.Cohort(crj=crj_data)
+        voyager = cohort_utils.model.VoyagerTempoMPGen(folderPath=VOYAGER3)
+        result = mycohort.get_voyager_normal_conflicts(voyager)
+
+        assert len(result) == 2
+        assert set(result["cmoId"]) == {"C-AAAAAA-P001-d", "C-CCCCCC-P001-d"}
+
+        row_a = result[result["cmoId"] == "C-AAAAAA-P001-d"].iloc[0]
+        assert row_a["tumor_primaryId"] == "12345_1"
+        assert row_a["cohort_normal"] == "C-BBBBBB-N001-d"
+        assert row_a["cohort_normal_primaryId"] == "12345_5"
+        assert row_a["voyager_normal"] == "C-AAAAAA-N001-d"
+        assert row_a["voyager_normal_primaryId"] == "12345_4"
+
+        row_c = result[result["cmoId"] == "C-CCCCCC-P001-d"].iloc[0]
+        assert row_c["tumor_primaryId"] == "12345_3"
+        assert row_c["cohort_normal"] == "C-ZZZZZZ-N001-d"
+        assert pd.isnull(row_c["cohort_normal_primaryId"])
+        assert row_c["voyager_normal"] == "C-CCCCCC-N001-d"
+        assert row_c["voyager_normal_primaryId"] == "12345_6"
 
     @run_test
     def test_s_style_cohort(self):
