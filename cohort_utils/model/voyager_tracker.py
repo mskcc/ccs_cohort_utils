@@ -46,7 +46,7 @@ class VoyagerTempoMPGen:
                 if col_name in df.columns:
                     unknown = set(df[col_name]) - tracker_ids
                     if unknown:
-                        errors.append(f"{file_name}: {col_name} values not in tracker: {unknown}")
+                        errors.append(f"{file_name}: {col_name} values not in tracker: {sorted(unknown)}")
         if errors:
             raise ValueError("VoyagerTempoMPGen validation failed:\n" + "\n".join(errors))
 
