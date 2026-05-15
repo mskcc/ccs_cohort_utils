@@ -39,6 +39,14 @@ class VoyagerTempoMPGen:
             missing = [c for c in required if c not in df.columns]
             if missing:
                 errors.append(f"{name}: missing columns {missing}")
+        if "CMO_Sample_ID" in self.tracker.columns:
+            tracker_ids = set(self.tracker["CMO_Sample_ID"])
+            for file_name, col_name in CROSS_FILE_CHECKS:
+                df = getattr(self, file_name)
+                if col_name in df.columns:
+                    unknown = set(df[col_name]) - tracker_ids
+                    if unknown:
+                        errors.append(f"{file_name}: {col_name} values not in tracker: {unknown}")
         if errors:
             raise ValueError("VoyagerTempoMPGen validation failed:\n" + "\n".join(errors))
 

@@ -42,6 +42,51 @@ class TestVoyagerValidation(unittest.TestCase):
         self.assertIn("tracker", str(ctx.exception))
         self.assertIn("primaryId", str(ctx.exception))
 
+    def test_pairing_tumor_not_in_tracker_raises(self):
+        tmpdir = self._make_temp_voyager({
+            "sample_pairing.txt": "TUMOR_ID\tNORMAL_ID\nA_T\tA_N\nUNKNOWN_T\tA_N\n"
+        })
+        with self.assertRaises(ValueError) as ctx:
+            cohort_utils.model.VoyagerTempoMPGen(folderPath=tmpdir)
+        self.assertIn("pairing", str(ctx.exception))
+        self.assertIn("UNKNOWN_T", str(ctx.exception))
+
+    def test_pairing_normal_not_in_tracker_raises(self):
+        tmpdir = self._make_temp_voyager({
+            "sample_pairing.txt": "TUMOR_ID\tNORMAL_ID\nA_T\tA_N\nB_T\tUNKNOWN_N\n"
+        })
+        with self.assertRaises(ValueError) as ctx:
+            cohort_utils.model.VoyagerTempoMPGen(folderPath=tmpdir)
+        self.assertIn("pairing", str(ctx.exception))
+        self.assertIn("UNKNOWN_N", str(ctx.exception))
+
+    def test_mapping_sample_not_in_tracker_raises(self):
+        tmpdir = self._make_temp_voyager({
+            "sample_mapping.txt": "SAMPLE\tTARGET\tFASTQ_PE1\tFASTQ_PE2\nA_T\tidt\t/p/1.fastq.gz\t/p/2.fastq.gz\nUNKNOWN_S\tidt\t/p/3.fastq.gz\t/p/4.fastq.gz\n"
+        })
+        with self.assertRaises(ValueError) as ctx:
+            cohort_utils.model.VoyagerTempoMPGen(folderPath=tmpdir)
+        self.assertIn("mapping", str(ctx.exception))
+        self.assertIn("UNKNOWN_S", str(ctx.exception))
+
+    def test_conflict_citag_not_in_tracker_raises(self):
+        tmpdir = self._make_temp_voyager({
+            "sample_conflict.txt": "ciTag\tcmoPatientId\tprimaryId\tsampleClass\trunMode\tsampleType\tbaitSet\trunDate\tConflict Reason\nUNKNOWN_C\tC-AAA\t12345_1\tTumor\tWES\tDNA\tidt\t2024-01-01\treason\n"
+        })
+        with self.assertRaises(ValueError) as ctx:
+            cohort_utils.model.VoyagerTempoMPGen(folderPath=tmpdir)
+        self.assertIn("conflict", str(ctx.exception))
+        self.assertIn("UNKNOWN_C", str(ctx.exception))
+
+    def test_unpaired_citag_not_in_tracker_raises(self):
+        tmpdir = self._make_temp_voyager({
+            "sample_unpaired.txt": "ciTag\tcmoPatientId\tprimaryId\tsampleClass\trunMode\tsampleType\tbaitSet\trunDate\tPossible Reason?\nUNKNOWN_U\tC-AAA\t12345_1\tTumor\tWES\tDNA\tidt\t2024-01-01\treason\n"
+        })
+        with self.assertRaises(ValueError) as ctx:
+            cohort_utils.model.VoyagerTempoMPGen(folderPath=tmpdir)
+        self.assertIn("unpaired", str(ctx.exception))
+        self.assertIn("UNKNOWN_U", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
