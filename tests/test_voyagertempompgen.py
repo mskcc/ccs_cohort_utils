@@ -87,6 +87,19 @@ class TestVoyagerValidation(unittest.TestCase):
         self.assertIn("unpaired", str(ctx.exception))
         self.assertIn("UNKNOWN_U", str(ctx.exception))
 
+    def test_multiple_violations_reported_together(self):
+        tmpdir = self._make_temp_voyager({
+            "sample_pairing.txt": "TUMOR_ID\tNORMAL_ID\nA_T\tA_N\nUNKNOWN_T\tA_N\n",
+            "sample_mapping.txt": "SAMPLE\tTARGET\tFASTQ_PE1\tFASTQ_PE2\nA_T\tidt\t/p/1.fastq.gz\t/p/2.fastq.gz\nUNKNOWN_S\tidt\t/p/3.fastq.gz\t/p/4.fastq.gz\n"
+        })
+        with self.assertRaises(ValueError) as ctx:
+            cohort_utils.model.VoyagerTempoMPGen(folderPath=tmpdir)
+        msg = str(ctx.exception)
+        self.assertIn("pairing", msg)
+        self.assertIn("UNKNOWN_T", msg)
+        self.assertIn("mapping", msg)
+        self.assertIn("UNKNOWN_S", msg)
+
 
 if __name__ == "__main__":
     unittest.main()
