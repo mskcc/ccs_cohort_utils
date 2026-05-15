@@ -9,13 +9,14 @@ REQUIRED_COLUMNS = {
     "pairing": ["TUMOR_ID", "NORMAL_ID"],
 }
 
-CROSS_FILE_CHECKS = [  # used by _validate for cross-file consistency (Task 2)
+CROSS_FILE_CHECKS = [  # used by _validate for cross-file consistency
     ("mapping", "SAMPLE"),
     ("pairing", "TUMOR_ID"),
     ("pairing", "NORMAL_ID"),
     ("conflict", "ciTag"),
     ("unpaired", "ciTag"),
 ]
+
 
 class VoyagerTempoMPGen:
     def __init__(self,**kwargs):
@@ -44,7 +45,7 @@ class VoyagerTempoMPGen:
             for file_name, col_name in CROSS_FILE_CHECKS:
                 df = getattr(self, file_name)
                 if col_name in df.columns:
-                    unknown = set(df[col_name]) - tracker_ids
+                    unknown = {v for v in (set(df[col_name]) - tracker_ids) if pd.notna(v)}
                     if unknown:
                         errors.append(f"{file_name}: {col_name} values not in tracker: {sorted(unknown)}")
         if errors:
