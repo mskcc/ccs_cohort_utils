@@ -9,7 +9,7 @@ REQUIRED_COLUMNS = {
     "pairing": ["TUMOR_ID", "NORMAL_ID"],
 }
 
-CROSS_FILE_CHECKS = [
+CROSS_FILE_CHECKS = [  # used by _validate for cross-file consistency (Task 2)
     ("mapping", "SAMPLE"),
     ("pairing", "TUMOR_ID"),
     ("pairing", "NORMAL_ID"),
@@ -24,11 +24,13 @@ class VoyagerTempoMPGen:
         self._validate()
 
     def _load_files(self):
-        for source,index_col in {"tracker":"CMO_Sample_ID","conflict":"ciTag","unpaired":"ciTag","mapping":"SAMPLE","pairing":"TUMOR_ID"}.items():
+        for source, index_col in {"tracker": "CMO_Sample_ID", "conflict": "ciTag", "unpaired": "ciTag", "mapping": "SAMPLE", "pairing": "TUMOR_ID"}.items():
             print("loading " + source)
-            setattr(self,source + "_file", os.path.join(self.folderPath,"sample_" + source + ".txt"))
-            setattr(self,source, pd.read_csv(getattr(self,source + "_file"),sep="\t",header=0))
-            getattr(self,source).index = getattr(self,source)[[index_col]]
+            setattr(self, source + "_file", os.path.join(self.folderPath, "sample_" + source + ".txt"))
+            setattr(self, source, pd.read_csv(getattr(self, source + "_file"), sep="\t", header=0))
+            df = getattr(self, source)
+            if index_col in df.columns:
+                df.index = df[[index_col]]
 
     def _validate(self):
         errors = []

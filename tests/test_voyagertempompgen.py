@@ -30,7 +30,8 @@ class TestVoyagerValidation(unittest.TestCase):
         return tmpdir
 
     def test_valid_data_passes(self):
-        cohort_utils.model.VoyagerTempoMPGen(folderPath=VOYAGER1)
+        v = cohort_utils.model.VoyagerTempoMPGen(folderPath=VOYAGER1)
+        self.assertIsNotNone(v)
 
     def test_missing_required_column_raises(self):
         tmpdir = self._make_temp_voyager({
