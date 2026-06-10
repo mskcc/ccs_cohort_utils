@@ -35,6 +35,11 @@
             "type":"string",
             "description":"Project subtitle"
         },
+        "status":{
+            "type":"string",
+            "description":"Pipeline status",
+            "enum":["PASS","FAIL","PROVISIONAL"]
+        },
         "samples":{
             "type":"array",
             "description": "List of paired tumors in the cohort",
