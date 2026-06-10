@@ -40,10 +40,16 @@ This is a Python package (`cohort_utils`) for managing cancer genomics cohorts a
 ### Core domain
 
 **`cohort_utils/model/`** — domain objects:
-- `Cohort`: Central class. Loads from a CRJ dict or CRF file, normalizes IDs, validates against `cohort-request.schema.json`. Can serialize back to CRF, generate cohort-complete events, fill in missing normals, and integrate with SMILE metadata.
+- `Cohort`: Central class. Loads from a CRJ dict or CRF file, normalizes IDs, validates against `cohort-request.schema.json`. Can serialize back to CRF (`to_crf`, `to_crf_extend`), generate cohort-complete events, fill in missing normals, and integrate with SMILE metadata (`update_with_smile`, `update_with_metadata_table`). Has Voyager integration methods: `get_voyager_normal_conflicts`, `get_samples_not_in_voyager_tracker`, `generate_voyager_conflicts_table`, `generate_voyager_unpaired_table`.
 - `Sample`: Thin wrapper around a dict of sample metadata (cmoId/primaryId); used for enrichment via local metadata table or SMILE REST API.
 - `Pairing`: Tumor-normal pairing table loaded from a TSV.
-- `VoyagerTempoMPGen`: Parses Voyager tracker files (mapping, pairing, conflicts, unpaired).
+- `VoyagerTempoMPGen`: Parses Voyager tracker files (mapping, pairing, conflicts, unpaired). `compare(other)` diffs two Voyager exports by joining on `primaryId`, flagging added/dropped samples and bait/FASTQ/normal changes.
+
+**`cohort_utils/parsers/`** — file-to-Cohort conversion:
+- `CRF_Handler`: Reads a CRF file and converts it to a `Cohort` via `to_cohort()`. Handles the extended column set (`ONCOTREECODE`, `SAMPLENAME`, `INVESTIGATORSAMPLEID`, etc.) via `crf_cohort_sample_attr_map`.
+- `CRJ_Handler`: Thin wrapper; reads a CRJ JSON file and returns a `Cohort` via `to_cohort()`.
+
+**`cohort_utils/cbioportal/`** — cBioPortal utilities: MAF column definitions and helper for generating cBioPortal-compatible MAF output.
 
 **Two file formats:**
 - **CRF (Cohort Request File)**: Tab-delimited file with `#key:value` metadata header lines followed by `TUMOR_ID / NORMAL_ID / PRIMARY_ID / NORMAL_PRIMARY_ID` columns. Filename convention: `<cohortId>.cohort.txt`.
@@ -78,11 +84,15 @@ This is a Python package (`cohort_utils`) for managing cancer genomics cohorts a
 
 ### Schemas
 
-`cohort_utils/schema/` holds JSON Schema files for NATS event validation: `cohort-request`, `cohort-complete`, `bam-complete`, `maf-complete`, `qc-complete`. All are loaded at import time from `schema/__init__.py`.
+`cohort_utils/schema/` holds JSON Schema files for NATS event validation: `cohort-request`, `cohort-complete`, `cohort-assess`, `bam-complete`, `maf-complete`, `qc-complete`. All are loaded at import time from `schema/__init__.py`.
 
 ### Listener
 
 `listener/` contains the production NATS listener setup. The listener runs `smile-client`, which subscribes to `MDB_STREAM.consumers.tempo.*` and calls `cohort_utils.nats.message_handler.cohort_request_handler` for each message. Environment-specific config files (`smile_client_config_<env>.json`) with TLS credentials are not in the repo (stored at `/home/svc_core005_bot04/metadb_certs/`).
+
+### Test suite
+
+Tests live in `tests/` and must be run from that directory (they reference `./data/` for fixtures). Three files are CI-tested (`test_crf.py`, `test_message_handler.py`, `validate_schema.py`). The remaining test files (`test_cohort.py`, `test_sample.py`, `test_voyagertempompgen.py`, etc.) exist locally but are not part of CI. The `tests/utils.py` `run_test` decorator is a print-wrapper used by some test classes.
 
 ### External dependency: SMILE REST API
 
