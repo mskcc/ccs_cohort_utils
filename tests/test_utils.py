@@ -30,6 +30,9 @@ class TestUtils(unittest.TestCase):
         id = "07658_AB"
         assert cohort_utils.utils.categorize_id(id) == "requestId"
 
+        id = "13422_CP_9_1"
+        assert cohort_utils.utils.categorize_id(id) == "primaryId"
+
     @run_test
     def test_convert_primaryId_to_cmoId(self):
         assert cohort_utils.utils.convert_primaryId_to_cmoId("06208_B_21") == "C-000045-T004-d"

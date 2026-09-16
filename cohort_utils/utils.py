@@ -22,6 +22,10 @@ def categorize_id(id):
         id_type = "primaryId"
     elif re.match('^[0-9]{4,5}-[0-9]+$',id):
         id_type = "primaryId"
+    elif re.match('^[0-9]{4,5}-[A-Z]{1,2}-[0-9]+-[0-9]+$',id):
+        id_type = "primaryId"
+    elif re.match('^[0-9]{4,5}-[0-9]+-[0-9]+$',id):
+        id_type = "primaryId"
     elif re.match('^[0-9]{4,5}$',id):
         id_type = "requestId"
     elif re.match('^[0-9]{4,5}-[A-Z]{1,2}$',id):
